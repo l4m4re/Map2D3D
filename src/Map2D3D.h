@@ -22,10 +22,17 @@
 #define _LOOKUP_TABLE_2D3D
 
 //-----------------------------------------------------------------------------
+// Defines
+//-----------------------------------------------------------------------------
+
+// Requires Fix16 library: https://github.com/l4m4re/Arduino_fixpt
+#define SUPPORT_INTEGER_ARITMETHIC 1  
+
+//-----------------------------------------------------------------------------
 // Includes
 //-----------------------------------------------------------------------------
 
-#include <Arduino.h>
+#include <stdint.h>
 #include "interpolate.h"
 
 //-----------------------------------------------------------------------------
@@ -46,14 +53,13 @@
 // 
 // Based on:
 //
-// http://bit.ly/LUT_c_linear_interpolation
 // http://www.cplusplus.com/forum/general/114406/
 // 
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
-// 2D 2D lookup table / fuel map. X axis xs must be sorted in ascending order.
+// 2D lookup table / fuel map. X axis xs must be sorted in ascending order.
 //-----------------------------------------------------------------------------
 
 template<int S, typename T>  // S: determine size at compile time, T: data type
@@ -74,7 +80,7 @@ public:
                       for( int i=0; i<S; i++ ) { ys[i] = static_cast<T>(yss[i]); }
                   }
 
-#ifdef ARDUINO    // Initialize from array in PROGMEM
+#ifdef ARDUINO    // Initialization from array in PROGMEM
     void          setXs_P( const int16_t* xss ) 
                         { memcpy_P( xs, xss, S*sizeof(int16_t) ); }
 
@@ -95,7 +101,7 @@ public:
 
                     int i=0, j=S, k;
 
-                    /* find i, such that xs[i] <= x < xs[j] */
+                    // find i, such that xs[i] <= x < xs[j] using bisection
                     while ( j - i > 1) {                      
                         k = (i+j) >> 1;  // k = (i+j)/2
                         
@@ -103,7 +109,7 @@ public:
                         else                j = k;
                     }
 
-                    return interpolate( x, xs[i], xs[i+1], ys[i], ys[i+1] );   
+                    return interpolate( x, xs[i], ys[i], xs[i+1], ys[i+1] );   
                   }
 
 private:
@@ -113,6 +119,93 @@ private:
 
 };
 
+
+//-----------------------------------------------------------------------------
+// 3D lookup table / fuel map. X and Y axis must be sorted in ascending order.
+//-----------------------------------------------------------------------------
+
+template<int R, int S, typename T>  // R,S: size (compile time), T: data type
+class Table3D
+{
+public:
+
+    int           sizeX()                { return R; }
+    int           sizeY()                { return S; }
+
+
+    void          setXs( const int16_t* xss ) 
+                        { memcpy( xs, xss, R*sizeof(int16_t) ); }
+
+    void          setYs( const int16_t* yss ) 
+                        { memcpy( ys, yss, S*sizeof(int16_t) ); }
+
+    void          setZs( const T* zss )
+                        { memcpy( zs, zss, R*S*sizeof(T) ); }
+
+    void          setZsFromFloat( const float* zss ) 
+                  {
+                      for( int i=0; i<R*S; i++ ) 
+                        { zs[i] = static_cast<T>(zss[i]); }
+                  }
+
+#ifdef ARDUINO    // Initialize from array in PROGMEM
+    void          setXs_P( const int16_t* xss ) 
+                        { memcpy_P( xs, xss, R*sizeof(int16_t) ); }
+
+    void          setYs_P( const int16_t* yss ) 
+                        { memcpy_P( ys, yss, S*sizeof(int16_t) ); }
+
+    void          setZs_P( const T* zss )
+                        { memcpy_P( zs, zss, R*S*sizeof(T) ); }
+                        
+    void          setZsFromFloat_P( const float* zss )
+                  {
+                      for( int i=0; i<R*S; i++ ) 
+                          { zs[i] = static_cast<T>( pgm_read_float_near(zss+i) ); }
+                  }
+#endif
+
+    T             getValue(int16_t x, int16_t y)
+                  {    
+                    if (x < xs[0])      { x = xs[0];   } // minimum
+                    if (x > xs[R-1])    { x = xs[R-1]; } // maximum
+                    if (y < ys[0])      { x = ys[0];   } // minimum
+                    if (y > ys[S-1])    { x = ys[S-1]; } // maximum
+
+                    int i=0, j=R, m;
+
+                    // find i, such that xs[i] <= x < xs[j] using bisection
+                    while ( j - i > 1) {                      
+                        m = (i+j) >> 1;  // m = (i+j)/2
+                        
+                        if ( x >= xs[m] )   i = m;
+                        else                j = m;
+                    }
+
+                    int k=S; 
+                    j=0;
+                    
+                    // find j, such that ys[j] <= y < ys[k] using bisection
+                    while ( k - j > 1) {                      
+                        m = (j+k) >> 1;  // m = (i+j)/2
+                        
+                        if ( y >= ys[m] )   j = m;
+                        else                k = m;
+                    }
+
+                    return interpolate( x, y, 
+                                        xs[i], xs[i+1], 
+                                        ys[j], ys[j+1],
+                                        zs[i][j], zs[i+1][j+1] );   
+                  }
+
+private:
+
+    int16_t       xs[S];
+    int16_t       ys[S];
+    T             zs[R][S];
+
+};
 
 
 //-----------------------------------------------------------------------------

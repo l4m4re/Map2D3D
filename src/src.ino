@@ -1,4 +1,5 @@
 
+#include "Arduino.h"
 #include "Map2D3D.h"
 
 //#include <fix16.h>
@@ -27,8 +28,7 @@
 
 /* NOTE: xs MUST be sorted */
 const int16_t  xs[] PROGMEM = { 300,     700,  800,  900,  1500, 1800,   2100, 2500 };
-const uint8_t  ys[] PROGMEM = {  10,      89,  126,    0,   225,  230,    220,   10 };
-const int8_t  yss[] PROGMEM = {-127,     -50,  127,    0,    10,   -30,   -50,   10 };
+const int8_t   ys[] PROGMEM = {-127,     -50,  127,    0,    10,   -30,   -50,   10 };
 
 #define USEPROGMEM
 // In order to use program memory for Fix16's directly, we need to cast to/from int32_t 
@@ -80,25 +80,13 @@ void setup()
     Serial.println();
     Serial.println( F("Hi there") );
 
-    Table2D<8, uint8_t>  test;
+    Table2D<8, int8_t>  test;
     test.setXs_P(xs);
     test.setYs_P(ys);
 
     for( int idx=250; idx<2550; idx+=50)
     {
-      uint8_t val = test.getValue(idx);
-      Serial.print(idx);
-      Serial.print( F(": ") );
-      Serial.println( (int)val );
-    }
-
-    Table2D<8, int8_t>  test2;
-    test2.setXs_P(xs);
-    test2.setYs_P(yss);
-
-    for( int idx=250; idx<2550; idx+=50)
-    {
-      int8_t val = test2.getValue(idx);
+      int8_t val = test.getValue(idx);
       Serial.print(idx);
       Serial.print( F(": ") );
       Serial.println( (int)val );
