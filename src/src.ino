@@ -1,6 +1,9 @@
 
 #include "Map2D3D.h"
 
+//#include <fix16.h>
+#include <fix16.hpp>
+
 #define BAUDRATE    115200
 
 /* http://www.gammon.com.au/progmem 
@@ -23,9 +26,19 @@
 */
 
 /* NOTE: xs MUST be sorted */
-const uint16_t xs[] PROGMEM = { 300, 700, 800, 900, 1500, 1800, 2100, 2500 };
-const uint8_t  ys[] PROGMEM = {  10,  89, 126,   0,  225,  230,  220,   10 };
-const int8_t  yss[] PROGMEM = {-127, -50, 127,   0,  10,   -30,  -50,   10 };
+const int16_t  xs[] PROGMEM = { 300,     700, 800, 900,  1500, 1800,   2100, 2500 };
+const uint8_t  ys[] PROGMEM = {  10,      89, 126,   0,   225,  230,    220,   10 };
+const int8_t  yss[] PROGMEM = {-127,     -50, 127,   0,    10,   -30,   -50,   10 };
+
+
+#define USEPROGMEM
+// In order to be able to use program memory for Fix16's, we need to cast from int32_t 
+#ifdef USEPROGMEM    
+const int32_t ysf[] PROGMEM = {0xFF80B333, 0xFFCE1999, 0x7F0000,  0,  0xD4CCD, 0xFFDF0000, 0xFFDC3333, 0xA0000 };
+#else
+const Fix16   ysf[]         = {-127.3, -49.9, 127,   0,  13.3,   -33, -35.8,   10 };
+#endif
+
 
 // Some test data from Miata Brain ECU
 // https://sourceforge.net/projects/miatabrain/
@@ -64,7 +77,7 @@ void setup()
     initSerial();
 
     Serial.println( F("Hi there") );
-  
+/*  
     Table2D<8, uint8_t>  test;
     test.setXs_P(xs);
     test.setYs_P(ys);
@@ -87,6 +100,37 @@ void setup()
       Serial.print(idx);
       Serial.print( F(": ") );
       Serial.println( (int)val );
+    }
+
+*/
+
+
+    Table2D<8, Fix16>  testFix16;
+    testFix16.setXs_P(xs);
+#ifdef USEPROGMEM    
+    testFix16.setYs_P( (const Fix16*)ysf );
+#else
+    testFix16.setYs(ysf);
+#endif
+
+    for( int idx=0; idx<8; idx++)
+    {
+      Serial.print(idx);
+      Serial.print( F(": ") );
+      Serial.print( (float)ysf[idx] );
+      Serial.print( F(": ") );
+#ifndef USEPROGMEM       
+      Serial.println( ysf[idx].value, HEX );
+#endif
+    }
+
+
+    for( int idx=250; idx<2550; idx+=50)
+    {
+      Fix16 val = testFix16.getValue(idx);
+      Serial.print(idx);
+      Serial.print( F(": ") );
+      Serial.println( (float)val );
     }
    
 }

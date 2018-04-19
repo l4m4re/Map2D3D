@@ -56,12 +56,17 @@
 //-----------------------------------------------------------------------------
 
 template <class T>
-T interpolate( uint16_t x, uint16_t x1, uint16_t x2, T y1, T y2 )
+T interpolate( int16_t x, int16_t x1, int16_t x2, T y1, T y2 )
 {
-    uint16_t  dx = x2-x1;
-    int32_t   dy = y2-y1;
- 
-    return y1 + (x-x1) * (dy/dx);
+    int16_t   dx  = x2-x1;
+    T         dy  = y2-y1;
+    
+//  return y1 + (x-x1) * (dy/dx); // avoid ambigious operator overloading:
+
+    T       delta = x-x1;
+    T       dydx  = dy/dx;
+
+    return y1 + delta * dydx;
 }
 
 
@@ -69,13 +74,13 @@ T interpolate( uint16_t x, uint16_t x1, uint16_t x2, T y1, T y2 )
 // casting into an int32 and shift by 6 bits.
 
 template<>
-uint8_t interpolate( uint16_t   x, uint16_t  x1, uint16_t x2, 
+uint8_t interpolate( int16_t   x, int16_t  x1, int16_t x2, 
                       uint8_t  y1, uint8_t y2 )
 {
     int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
     int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
 
-    uint16_t  dx = x2-x1;
+    int16_t  dx = x2-x1;
     int32_t   dy = _y2-_y1;
 
     dprint(F("uint8_t"));
@@ -85,13 +90,13 @@ uint8_t interpolate( uint16_t   x, uint16_t  x1, uint16_t x2,
 
 
 template<>
-int8_t interpolate( uint16_t x, uint16_t x1, uint16_t x2, 
+int8_t interpolate( int16_t x, int16_t x1, int16_t x2, 
                     int8_t  y1, int8_t y2 )
 {
     int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
     int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
 
-    uint16_t  dx = x2-x1;
+    int16_t  dx = x2-x1;
     int32_t   dy = _y2-_y1;
 
     dprint(F("int8_t"));
@@ -101,13 +106,13 @@ int8_t interpolate( uint16_t x, uint16_t x1, uint16_t x2,
 
 
 template<>
-uint16_t interpolate( uint16_t x, uint16_t x1, uint16_t x2, 
+uint16_t interpolate( int16_t x, int16_t x1, int16_t x2, 
                           uint16_t y1, uint16_t y2 )
 {
     int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
     int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
 
-    uint16_t  dx = x2-x1;
+    int16_t  dx = x2-x1;
     int32_t   dy = _y2-_y1;
 
     dprint(F("uint16_t"));
@@ -117,13 +122,13 @@ uint16_t interpolate( uint16_t x, uint16_t x1, uint16_t x2,
 
 
 template<>
-int16_t interpolate( uint16_t  x, uint16_t x1, uint16_t x2, 
+int16_t interpolate( int16_t  x, int16_t x1, int16_t x2, 
                           int16_t y1, int16_t y2 )
 {
     int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
     int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
 
-    uint16_t  dx = x2-x1;
+    int16_t  dx = x2-x1;
     int32_t   dy = _y2-_y1;
 
     dprint(F("int16_t"));
@@ -140,21 +145,26 @@ public:
 
     int           size()                { return S; }
 
-    void          setXs( const uint16_t* xss ) 
-                        { memcpy( xs, xss, S*sizeof(uint16_t) ); }
+    void          setXs( const int16_t* xss ) 
+                        { memcpy( xs, xss, S*sizeof(int16_t) ); }
 
     void          setYs( const T* yss )
                         { memcpy( ys, yss, S*sizeof(T) ); }
 
 #ifdef ARDUINO    // Initialize from array in PROGMEM
-    void          setXs_P( const uint16_t* xss ) 
-                        { memcpy_P( xs, xss, S*sizeof(uint16_t) ); }
+    void          setXs_P( const int16_t* xss ) 
+                        { memcpy_P( xs, xss, S*sizeof(int16_t) ); }
 
     void          setYs_P( const T* yss )
-                        { memcpy_P( ys, yss, S*sizeof(T) ); }
+                        { 
+                          dprint( S );  
+                          dprint( sizeof(T) );  
+                          dprint( S*sizeof(T) );  
+                          memcpy_P( ys, yss, S*sizeof(T) ); 
+                        }
 #endif
 
-    T             getValue(uint16_t x)
+    T             getValue(int16_t x)
                   {    
                     int i;
  
@@ -173,7 +183,7 @@ public:
 
 private:
 
-    uint16_t      xs[S];
+    int16_t       xs[S];
     T             ys[S];
 
 };
