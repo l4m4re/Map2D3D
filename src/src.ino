@@ -39,6 +39,11 @@ const int32_t ysf[] PROGMEM = {0xFF80B333, 0xFFCE1999, 0x7F0000,  0,  0xD4CCD, 0
 const Fix16   ysf[]         = {-127.3, -49.9, 127,   0,  13.3,   -33, -35.8,   10 };
 #endif
 
+// TODO: This trick may also do it:   
+// static const fix16_t ys[] = { (fix16_t)(65536.0*10.0201+0.5), (fix16_t)(65536.0*89.542+0.5), (fix16_t)(65536.0*126.452+0.5), (fix16_t)(65536.0*171.453+0.5), (fix16_t)(65536.0*225.123+0.5) };
+
+
+
 
 // Some test data from Miata Brain ECU
 // https://sourceforge.net/projects/miatabrain/
@@ -76,8 +81,9 @@ void setup()
 {
     initSerial();
 
+    Serial.println();
     Serial.println( F("Hi there") );
-/*  
+
     Table2D<8, uint8_t>  test;
     test.setXs_P(xs);
     test.setYs_P(ys);
@@ -102,8 +108,6 @@ void setup()
       Serial.println( (int)val );
     }
 
-*/
-
 
     Table2D<8, Fix16>  testFix16;
     testFix16.setXs_P(xs);
@@ -119,7 +123,9 @@ void setup()
       Serial.print( F(": ") );
       Serial.print( (float)ysf[idx] );
       Serial.print( F(": ") );
-#ifndef USEPROGMEM       
+#ifdef USEPROGMEM       
+      Serial.println();
+#else
       Serial.println( ysf[idx].value, HEX );
 #endif
     }

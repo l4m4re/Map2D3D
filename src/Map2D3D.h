@@ -44,98 +44,11 @@
 //-----------------------------------------------------------------------------
 // 
 // Based on:
-// https://stackoverflow.com/questions/7091294/how-to-build-a-lookup-table-in-c-sdcc-compiler-with-linear-int16_terpolation
+//
+// http://bit.ly/LUT_c_linear_interpolation
 // http://www.cplusplus.com/forum/general/114406/
 // 
 //-----------------------------------------------------------------------------
-
-
-
-//-----------------------------------------------------------------------------
-// Linear interpolation with specialization for integer arithmetic 
-//-----------------------------------------------------------------------------
-
-template <class T>
-T interpolate( int16_t x, int16_t x1, int16_t x2, T y1, T y2 )
-{
-    int16_t   dx  = x2-x1;
-    T         dy  = y2-y1;
-    
-//  return y1 + (x-x1) * (dy/dx); // avoid ambigious operator overloading:
-
-    T       delta = x-x1;
-    T       dydx  = dy/dx;
-
-    return y1 + delta * dydx;
-}
-
-
-// For integer type lookup tables, we incorporate fractions by
-// casting into an int32 and shift by 6 bits.
-
-template<>
-uint8_t interpolate( int16_t   x, int16_t  x1, int16_t x2, 
-                      uint8_t  y1, uint8_t y2 )
-{
-    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
-    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
-
-    int16_t  dx = x2-x1;
-    int32_t   dy = _y2-_y1;
-
-    dprint(F("uint8_t"));
-    
-    return y1 + (( (x-x1) * (dy/dx) )>>6);
-}
-
-
-template<>
-int8_t interpolate( int16_t x, int16_t x1, int16_t x2, 
-                    int8_t  y1, int8_t y2 )
-{
-    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
-    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
-
-    int16_t  dx = x2-x1;
-    int32_t   dy = _y2-_y1;
-
-    dprint(F("int8_t"));
-
-    return y1 + (( (x-x1) * (dy/dx) )>>6);
-}
-
-
-template<>
-uint16_t interpolate( int16_t x, int16_t x1, int16_t x2, 
-                          uint16_t y1, uint16_t y2 )
-{
-    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
-    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
-
-    int16_t  dx = x2-x1;
-    int32_t   dy = _y2-_y1;
-
-    dprint(F("uint16_t"));
-
-    return y1 + (( (x-x1) * (dy/dx) )>>6);
-}
-
-
-template<>
-int16_t interpolate( int16_t  x, int16_t x1, int16_t x2, 
-                          int16_t y1, int16_t y2 )
-{
-    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
-    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
-
-    int16_t  dx = x2-x1;
-    int32_t   dy = _y2-_y1;
-
-    dprint(F("int16_t"));
-
-    return y1 + (( (x-x1) * (dy/dx) )>>6);
-}
-
 
 
 template<int S, typename T>  // S: determine size at compile time, T: data type
@@ -156,12 +69,7 @@ public:
                         { memcpy_P( xs, xss, S*sizeof(int16_t) ); }
 
     void          setYs_P( const T* yss )
-                        { 
-                          dprint( S );  
-                          dprint( sizeof(T) );  
-                          dprint( S*sizeof(T) );  
-                          memcpy_P( ys, yss, S*sizeof(T) ); 
-                        }
+                        { memcpy_P( ys, yss, S*sizeof(T) ); }
 #endif
 
     T             getValue(int16_t x)
@@ -188,6 +96,91 @@ private:
 
 };
 
+
+//-----------------------------------------------------------------------------
+// 2D linear interpolation with specialization for integer arithmetic
+//-----------------------------------------------------------------------------
+
+template <class T>
+inline T interpolate( int16_t x, int16_t x1, int16_t x2, T y1, T y2 )
+{
+    int16_t   dx  = x2-x1;
+    T         dy  = y2-y1;
+    
+//  return y1 + (x-x1) * (dy/dx); // avoid ambigious operator overloading:
+
+    T       delta = x-x1;
+    T       dydx  = dy/dx;
+
+    return y1 + delta * dydx;
+}
+
+
+// For integer type lookup tables, we incorporate fractions by
+// casting into an int32 and shift by 6 bits.
+
+template<>
+inline uint8_t interpolate( int16_t x, int16_t  x1, int16_t x2, 
+                           uint8_t y1, uint8_t y2 )
+{
+    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
+    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
+
+    int16_t  dx = x2-x1;
+    int32_t   dy = _y2-_y1;
+
+    dprint(F("uint8_t"));
+    
+    return y1 + (( (x-x1) * (dy/dx) )>>6);
+}
+
+
+template<>
+inline int8_t interpolate( int16_t x, int16_t x1, int16_t x2, 
+                           int8_t y1, int8_t y2 )
+{
+    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
+    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
+
+    int16_t  dx = x2-x1;
+    int32_t   dy = _y2-_y1;
+
+    dprint(F("int8_t"));
+
+    return y1 + (( (x-x1) * (dy/dx) )>>6);
+}
+
+
+template<>
+inline uint16_t interpolate( int16_t x, int16_t x1, int16_t x2, 
+                           uint16_t y1, uint16_t y2 )
+{
+    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
+    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
+
+    int16_t  dx = x2-x1;
+    int32_t   dy = _y2-_y1;
+
+    dprint(F("uint16_t"));
+
+    return y1 + (( (x-x1) * (dy/dx) )>>6);
+}
+
+
+template<>
+inline int16_t interpolate( int16_t  x, int16_t x1, int16_t x2, 
+                            int16_t y1, int16_t y2 )
+{
+    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
+    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
+
+    int16_t  dx = x2-x1;
+    int32_t   dy = _y2-_y1;
+
+    dprint(F("int16_t"));
+
+    return y1 + (( (x-x1) * (dy/dx) )>>6);
+}
 
 
 
