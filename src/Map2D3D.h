@@ -26,12 +26,13 @@
 //-----------------------------------------------------------------------------
 
 #include <Arduino.h>
+#include "interpolate.h"
 
 //-----------------------------------------------------------------------------
 // Debug stuff
 //-----------------------------------------------------------------------------
 
-//#define DEBUG            1
+#define DEBUG            1
 
 #if DEBUG == 1
     #define dprint(expression) Serial.print(F("# ")); Serial.print( F(#expression) ); Serial.print( F(": ") ); Serial.println( expression )
@@ -51,6 +52,10 @@
 //-----------------------------------------------------------------------------
 
 
+//-----------------------------------------------------------------------------
+// 2D 2D lookup table / fuel map. X axis xs must be sorted in ascending order.
+//-----------------------------------------------------------------------------
+
 template<int S, typename T>  // S: determine size at compile time, T: data type
 class Table2D
 {
@@ -64,26 +69,38 @@ public:
     void          setYs( const T* yss )
                         { memcpy( ys, yss, S*sizeof(T) ); }
 
+    void          setYsFromFloat( const float* yss ) 
+                  {
+                      for( int i=0; i<S; i++ ) { ys[i] = static_cast<T>(yss[i]); }
+                  }
+
 #ifdef ARDUINO    // Initialize from array in PROGMEM
     void          setXs_P( const int16_t* xss ) 
                         { memcpy_P( xs, xss, S*sizeof(int16_t) ); }
 
     void          setYs_P( const T* yss )
                         { memcpy_P( ys, yss, S*sizeof(T) ); }
+                        
+    void          setYsFromFloat_P( const float* yss )
+                  {
+                      for( int i=0; i<S; i++ ) 
+                          { ys[i] = static_cast<T>( pgm_read_float_near(yss+i) ); }
+                  }
 #endif
 
     T             getValue(int16_t x)
                   {    
-                    int i;
- 
                     if (x < xs[0])      { return ys[0];   } // minimum
                     if (x > xs[S-1])    { return ys[S-1]; } // maximum
 
-                    /* find i, such that xs[i] <= x < xs[i+1] */
-                    for (i = 0; i < S-1; i++) {
-                        if (xs[i+1] > x) {
-                            break;
-                        }
+                    int i=0, j=S, k;
+
+                    /* find i, such that xs[i] <= x < xs[j] */
+                    while ( j - i > 1) {                      
+                        k = (i+j) >> 1;  // k = (i+j)/2
+                        
+                        if ( x >= xs[k] )   i = k;
+                        else                j = k;
                     }
 
                     return interpolate( x, xs[i], xs[i+1], ys[i], ys[i+1] );   
@@ -95,92 +112,6 @@ private:
     T             ys[S];
 
 };
-
-
-//-----------------------------------------------------------------------------
-// 2D linear interpolation with specialization for integer arithmetic
-//-----------------------------------------------------------------------------
-
-template <class T>
-inline T interpolate( int16_t x, int16_t x1, int16_t x2, T y1, T y2 )
-{
-    int16_t   dx  = x2-x1;
-    T         dy  = y2-y1;
-    
-//  return y1 + (x-x1) * (dy/dx); // avoid ambigious operator overloading:
-
-    T       delta = x-x1;
-    T       dydx  = dy/dx;
-
-    return y1 + delta * dydx;
-}
-
-
-// For integer type lookup tables, we incorporate fractions by
-// casting into an int32 and shift by 6 bits.
-
-template<>
-inline uint8_t interpolate( int16_t x, int16_t  x1, int16_t x2, 
-                           uint8_t y1, uint8_t y2 )
-{
-    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
-    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
-
-    int16_t  dx = x2-x1;
-    int32_t   dy = _y2-_y1;
-
-    dprint(F("uint8_t"));
-    
-    return y1 + (( (x-x1) * (dy/dx) )>>6);
-}
-
-
-template<>
-inline int8_t interpolate( int16_t x, int16_t x1, int16_t x2, 
-                           int8_t y1, int8_t y2 )
-{
-    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
-    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
-
-    int16_t  dx = x2-x1;
-    int32_t   dy = _y2-_y1;
-
-    dprint(F("int8_t"));
-
-    return y1 + (( (x-x1) * (dy/dx) )>>6);
-}
-
-
-template<>
-inline uint16_t interpolate( int16_t x, int16_t x1, int16_t x2, 
-                           uint16_t y1, uint16_t y2 )
-{
-    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
-    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
-
-    int16_t  dx = x2-x1;
-    int32_t   dy = _y2-_y1;
-
-    dprint(F("uint16_t"));
-
-    return y1 + (( (x-x1) * (dy/dx) )>>6);
-}
-
-
-template<>
-inline int16_t interpolate( int16_t  x, int16_t x1, int16_t x2, 
-                            int16_t y1, int16_t y2 )
-{
-    int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
-    int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
-
-    int16_t  dx = x2-x1;
-    int32_t   dy = _y2-_y1;
-
-    dprint(F("int16_t"));
-
-    return y1 + (( (x-x1) * (dy/dx) )>>6);
-}
 
 
 

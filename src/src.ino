@@ -26,23 +26,19 @@
 */
 
 /* NOTE: xs MUST be sorted */
-const int16_t  xs[] PROGMEM = { 300,     700, 800, 900,  1500, 1800,   2100, 2500 };
-const uint8_t  ys[] PROGMEM = {  10,      89, 126,   0,   225,  230,    220,   10 };
-const int8_t  yss[] PROGMEM = {-127,     -50, 127,   0,    10,   -30,   -50,   10 };
-
+const int16_t  xs[] PROGMEM = { 300,     700,  800,  900,  1500, 1800,   2100, 2500 };
+const uint8_t  ys[] PROGMEM = {  10,      89,  126,    0,   225,  230,    220,   10 };
+const int8_t  yss[] PROGMEM = {-127,     -50,  127,    0,    10,   -30,   -50,   10 };
 
 #define USEPROGMEM
-// In order to be able to use program memory for Fix16's, we need to cast from int32_t 
+// In order to use program memory for Fix16's directly, we need to cast to/from int32_t 
 #ifdef USEPROGMEM    
 const int32_t ysf[] PROGMEM = {0xFF80B333, 0xFFCE1999, 0x7F0000,  0,  0xD4CCD, 0xFFDF0000, 0xFFDC3333, 0xA0000 };
+const float  ysfl[] PROGMEM = {-127.3, -49.9, 127.0, 0.0,  13.3, -33.0, -35.8, 10.0 };
 #else
 const Fix16   ysf[]         = {-127.3, -49.9, 127,   0,  13.3,   -33, -35.8,   10 };
+const float  ysfl[]         = {-127.3, -49.9, 127.0, 0.0,  13.3, -33.0, -35.8, 10.0 };
 #endif
-
-// TODO: This trick may also do it:   
-// static const fix16_t ys[] = { (fix16_t)(65536.0*10.0201+0.5), (fix16_t)(65536.0*89.542+0.5), (fix16_t)(65536.0*126.452+0.5), (fix16_t)(65536.0*171.453+0.5), (fix16_t)(65536.0*225.123+0.5) };
-
-
 
 
 // Some test data from Miata Brain ECU
@@ -111,6 +107,7 @@ void setup()
 
     Table2D<8, Fix16>  testFix16;
     testFix16.setXs_P(xs);
+    
 #ifdef USEPROGMEM    
     testFix16.setYs_P( (const Fix16*)ysf );
 #else
@@ -138,7 +135,31 @@ void setup()
       Serial.print( F(": ") );
       Serial.println( (float)val );
     }
-   
+
+
+//  Test Fix16 from float and compare with testFix16
+
+    Table2D<8, Fix16>  testFix16FromFloat;
+    testFix16FromFloat.setXs_P(xs);
+
+#ifdef USEPROGMEM
+    testFix16FromFloat.setYsFromFloat_P(ysfl);
+#else   
+    testFix16FromFloat.setYsFromFloat(ysfl);
+#endif
+
+    for( int idx=250; idx<2550; idx+=50)
+    {
+      Fix16 val = testFix16FromFloat.getValue(idx);
+      Fix16 val2 = testFix16.getValue(idx);
+      Serial.print(idx);
+      Serial.print( F(": ") );
+      Serial.print( (float)val );
+      Serial.print( F(", ") );
+      Serial.println( (float)val2 );
+    }
+
+ 
 }
 
 

@@ -84,7 +84,7 @@ inline uint16_t interpolate( int16_t x, int16_t x1, int16_t x2,
     int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
     int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
 
-    int16_t  dx = x2-x1;
+    int16_t   dx = x2-x1;
     int32_t   dy = _y2-_y1;
 
     return y1 + (( (x-x1) * (dy/dx) )>>6);
@@ -98,7 +98,7 @@ inline int16_t interpolate( int16_t  x, int16_t x1, int16_t x2,
     int32_t   _y1 = (static_cast<int32_t>(y1))<<6;
     int32_t   _y2 = (static_cast<int32_t>(y2))<<6;
 
-    int16_t  dx = x2-x1;
+    int16_t   dx = x2-x1;
     int32_t   dy = _y2-_y1;
 
     return y1 + (( (x-x1) * (dy/dx) )>>6);
