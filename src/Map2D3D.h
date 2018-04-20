@@ -94,39 +94,20 @@
 // 2D lookup table / fuel map. X axis (xs) must be sorted in ascending order.
 //-----------------------------------------------------------------------------
 
-template<int S, typename T>  // S: determine size at compile time, T: data type
+template<int S, typename X, typename Y> // S: size, X,Y: data types
 class Table2D
 {
 public:
 
-    int           sizeX()                { return S; }
+    int           sizeX()               { return S; }
 
-    void          setXs( const int16_t* xss ) 
-                        { memcpy( xs, xss, S*sizeof(int16_t) ); }
+    void          setXs( const X* xss ) 
+                        { memcpy( xs, xss, S*sizeof(X) ); }
 
-    void          setYs( const T* yss )
-                        { memcpy( ys, yss, S*sizeof(T) ); }
+    void          setYs( const Y* yss )
+                        { memcpy( ys, yss, S*sizeof(Y) ); }
 
-    void          setYsFromFloat( const float* yss ) 
-                  {
-                      for( int i=0; i<S; i++ ) { ys[i] = static_cast<T>(yss[i]); }
-                  }
-
-#ifdef ARDUINO    // Initialization from array in PROGMEM
-    void          setXs_P( const int16_t* xss ) 
-                        { memcpy_P( xs, xss, S*sizeof(int16_t) ); }
-
-    void          setYs_P( const T* yss )
-                        { memcpy_P( ys, yss, S*sizeof(T) ); }
-                        
-    void          setYsFromFloat_P( const float* yss )
-                  {
-                      for( int i=0; i<S; i++ ) 
-                          { ys[i] = static_cast<T>( pgm_read_float_near(yss+i) ); }
-                  }
-#endif
-
-    T             f( int16_t x )        // approximate f(x)
+    Y             f( X x )              // approximate f(x)
                   {    
                     if (x < xs[0])      { return ys[0];   } // minimum
                     if (x > xs[S-1])    { return ys[S-1]; } // maximum
@@ -145,19 +126,52 @@ public:
 
                   }
 
-private:
+//protected:
 
-    int16_t       xs[S];
-    T             ys[S];
+    X             xs[S];
+    Y             ys[S];
 
 };
+
+
+//-----------------------------------------------------------------------------
+// 2D lookup table / fuel map with int16 for the x axis.
+//-----------------------------------------------------------------------------
+
+template<int S, typename Y>  // S: determine size at compile time, T: data type
+class iTable2D: public Table2D<S, int16_t, Y>
+{
+
+public:
+
+    void          setYsFromFloat( const float* yss ) 
+                  {
+                      for( int i=0; i<S; i++ ) { this->ys[i] = static_cast<Y>(yss[i]); }
+                  }
+
+#ifdef ARDUINO    // Initialization from array in PROGMEM
+
+    void          setXs_P( const int16_t* xss ) 
+                        { memcpy_P( this->xs, xss, S*sizeof(int16_t) ); }
+
+    void          setYs_P( const Y* yss )
+                        { memcpy_P( this->ys, yss, S*sizeof(Y) ); }
+                        
+    void          setYsFromFloat_P( const float* yss )
+                  {
+                      for( int i=0; i<S; i++ ) 
+                          { this->ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
+                  }
+#endif
+};
+
 
 
 //-----------------------------------------------------------------------------
 // 3D lookup table / fuel map. X axis must be sorted in ascending order.
 //-----------------------------------------------------------------------------
 
-template<int R, int S, typename T>  // R,S: size (compile time), T: data type
+template<int R, int S, typename X, typename Y> // R,S: size, Y,Y: data type
 class Table3D
 {
 public:
@@ -166,39 +180,16 @@ public:
     int           sizeX2()                { return S; }
 
 
-    void          setX1s( const int16_t* x1ss ) 
-                        { memcpy( x1s, x1ss, R*sizeof(int16_t) ); }
+    void          setX1s( const X* x1ss ) 
+                        { memcpy( x1s, x1ss, R*sizeof(X) ); }
 
-    void          setX2s( const int16_t* x2ss ) 
-                        { memcpy( x2s, x2ss, S*sizeof(int16_t) ); }
+    void          setX2s( const X* x2ss ) 
+                        { memcpy( x2s, x2ss, S*sizeof(X) ); }
 
-    void          setYs( const T* yss )
-                        { memcpy( ys, yss, R*S*sizeof(T) ); }
+    void          setYs( const Y* yss )
+                        { memcpy( ys, yss, R*S*sizeof(Y) ); }
 
-    void          setYsFromFloat( const float* yss ) 
-                  {
-                      for( int i=0; i<R*S; i++ ) 
-                        { ys[i] = static_cast<T>(yss[i]); }
-                  }
-
-#ifdef ARDUINO    // Initialize from array in PROGMEM
-    void          setX1s_P( const int16_t* x1ss ) 
-                        { memcpy_P( x1s, x1ss, R*sizeof(int16_t) ); }
-
-    void          setX2s_P( const int16_t* x2ss ) 
-                        { memcpy_P( x2s, x2ss, S*sizeof(int16_t) ); }
-
-    void          setYs_P( const T* yss )
-                        { memcpy_P( ys, yss, R*S*sizeof(T) ); }
-                        
-    void          setYsFromFloat_P( const float* yss )
-                  {
-                      for( int i=0; i<R*S; i++ ) 
-                          { ys[i] = static_cast<T>( pgm_read_float_near(yss+i) ); }
-                  }
-#endif
-
-    T             f( int16_t x1, int16_t x2 )
+    Y             f( X x1, X x2 )
                   {    
                     if (x1 < x1s[0])      { x1 = x1s[0];   } // minimum
                     if (x1 > x1s[R-1])    { x1 = x1s[R-1]; } // maximum
@@ -233,12 +224,48 @@ public:
 
 private:
 
-    int16_t       x1s[S];
-    int16_t       x2s[S];
-    T             ys[R][S];
+    X             x1s[S];
+    X             x2s[S];
+    Y             ys[R][S];
 
 };
 
+
+//-----------------------------------------------------------------------------
+// 3D lookup table / fuel map with int16 for the x axis.
+//-----------------------------------------------------------------------------
+
+template<int R, int S, typename Y>  // R,S: size, Y: data type
+class iTable3D: public Table3D<R, S, int16_t, Y>
+{
+
+public:
+
+    void          setYsFromFloat( const float* yss ) 
+                  {
+                      for( int i=0; i<R*S; i++ ) 
+                        { this->ys[i] = static_cast<Y>(yss[i]); }
+                  }
+
+#ifdef ARDUINO    // Initialize from array in PROGMEM
+
+    void          setX1s_P( const int16_t* x1ss ) 
+                        { memcpy_P( this->x1s, x1ss, R*sizeof(int16_t) ); }
+
+    void          setX2s_P( const int16_t* x2ss ) 
+                        { memcpy_P( this->x2s, x2ss, S*sizeof(int16_t) ); }
+
+    void          setYs_P( const Y* yss )
+                        { memcpy_P( this->ys, yss, R*S*sizeof(Y) ); }
+                        
+    void          setYsFromFloat_P( const float* yss )
+                  {
+                      for( int i=0; i<R*S; i++ ) 
+                          { this->ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
+                  }
+#endif
+
+};
 
 //-----------------------------------------------------------------------------
 // 

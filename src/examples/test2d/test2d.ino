@@ -69,7 +69,7 @@ void setup()
     Serial.println( F("----------------------------") );
 
 
-    Table2D<8, byte>  testb;
+    iTable2D<8, byte>  testb;
     testb.setXs_P(xs);
     testb.setYs_P(ysb);
 
@@ -87,23 +87,23 @@ void setup()
     Serial.println( F("rpm  char  fix16   fix16   float   double ") );
     Serial.println( F("------------------------------------------") );
 
-    Table2D<8, int8_t>  test;
+    iTable2D<8, int8_t>  test;
     test.setXs_P(xs);
     test.setYs_P(ys8);
 
-    Table2D<8, Fix16>  testFix16;
+    iTable2D<8, Fix16>  testFix16;
     testFix16.setXs_P(xs);
     testFix16.setYs_P( (const Fix16*)ysf16 );
 
-    Table2D<8, Fix16>  testFix16FromFloat;
+    iTable2D<8, Fix16>  testFix16FromFloat;
     testFix16FromFloat.setXs_P(xs);
     testFix16FromFloat.setYsFromFloat_P(ysfl);
 
-    Table2D<8, float> testFloat;
+    iTable2D<8, float> testFloat;
     testFloat.setXs_P(xs);
     testFloat.setYsFromFloat_P(ysfl);
 
-    Table2D<8, float> testDouble;
+    iTable2D<8, float> testDouble;
     testDouble.setXs_P(xs);
     testDouble.setYsFromFloat_P(ysfl);
 
