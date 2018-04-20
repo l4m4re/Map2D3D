@@ -72,7 +72,7 @@ system and therefore play a most important role in engine tuning. For a
 short introduction in engine tuning and how maps/tables are vizualised and
 edited, see:
 
-  (https:speeduino.com/wiki/index.php/Tuning)  
+[https:speeduino.com/wiki/index.php/Tuning](https:speeduino.com/wiki/index.php/Tuning)  
 
 
 
