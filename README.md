@@ -8,9 +8,9 @@ code in there, so it should be easy to adapt for other platforms.
 
 Support for integer and byte tables (small footprint and much faster than
 floats on a platform without FPU) requires
-[Libfixmath](https:en.wikipedia.org/wiki/Libfixmath).  Also see
-[PetteriAimonen/libfixmath](https:github.com/PetteriAimonen/libfixmath) and
-[my repository for an Arduino version](https:github.com/l4m4re/Arduino_fixpt)
+[Libfixmath](https://en.wikipedia.org/wiki/Libfixmath).  Also see
+[PetteriAimonen/libfixmath](https://github.com/PetteriAimonen/libfixmath) and
+[my repository for an Arduino version](https://github.com/l4m4re/Arduino_fixpt)
 
 
 Description:
@@ -43,7 +43,7 @@ compute a table of a number of known function values for a number of known
 input values, which can then be used to approximate the function.
 
 An example of such a function is the [Volumetric_efficiency
-(VE)](https:en.wikipedia.org/wiki/Volumetric_efficiency) of an engine as a
+(VE)](https://en.wikipedia.org/wiki/Volumetric_efficiency) of an engine as a
 function of RPM and the pressure in the inlet manifold:
 
 "Volumetric efficiency in an internal combustion engine design refers to the
@@ -62,7 +62,7 @@ and thus it is common to refer to such a mapping as a 3D map, often called a
 control systems and largely determine the behavior of the control system and
 therefore play a most important role in engine tuning. For a short
 introduction in engine tuning and how maps/tables are vizualised and edited,
-see [Speeduino Tuning](https:speeduino.com/wiki/index.php/Tuning).
+see [Speeduino Tuning](https://speeduino.com/wiki/index.php/Tuning).
 
 
 
