@@ -86,7 +86,7 @@ void setup()
 
     for( int idx=250; idx<2550; idx+=50)
     {
-      int8_t val = test.getValue(idx);
+      int8_t val = test.f(idx);
       Serial.print(idx);
       Serial.print( F(": ") );
       Serial.println( (int)val );
@@ -118,7 +118,7 @@ void setup()
 
     for( int idx=250; idx<2550; idx+=50)
     {
-      Fix16 val = testFix16.getValue(idx);
+      Fix16 val = testFix16.f(idx);
       Serial.print(idx);
       Serial.print( F(": ") );
       Serial.println( (float)val );
@@ -138,8 +138,8 @@ void setup()
 
     for( int idx=250; idx<2550; idx+=50)
     {
-      Fix16 val = testFix16FromFloat.getValue(idx);
-      Fix16 val2 = testFix16.getValue(idx);
+      Fix16 val = testFix16FromFloat.f(idx);
+      Fix16 val2 = testFix16.f(idx);
       Serial.print(idx);
       Serial.print( F(": ") );
       Serial.print( (float)val );

@@ -1,4 +1,6 @@
 //-----------------------------------------------------------------------------
+// (Bi)Linear interpolation in 2D and 3D 
+//-----------------------------------------------------------------------------
 //
 // Copyright (C) 2018 Arend Lammertink
 //
@@ -15,23 +17,29 @@
 // with this library.  If not, see <http://www.gnu.org/licenses/>.
 //
 //-----------------------------------------------------------------------------
+// 
+// Based on:
+//
+// Interpolation in Two or More Dimensions
+// http://www.aip.de/groups/soe/local/numres/bookcpdf/c3-6.pdf
+//
+// How to build a lookup table in C (SDCC compiler) with linear interpolation
+// http://bit.ly/LUT_c_linear_interpolation
+//
+// Linear interpolation: calculate correction based on 2D table
+// http://bit.ly/Interpolate2D
+//
+// 2D Array Interpolation
+// http://bit.ly/biliniar_barycentric_interpolation
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // Multi-include protection
 //-----------------------------------------------------------------------------
 
 #ifndef _INTERPOL_H
 #define _INTERPOL_H
-
-//-----------------------------------------------------------------------------
-// 
-// (Bi)Linear interpolation in 2D and 3D 
-//
-// Based on:
-//
-// http://bit.ly/LUT_c_linear_interpolation
-// http://bit.ly/Interpolate2D
-// http://bit.ly/biliniar_barycentric_interpolation
-// 
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 // Includes
@@ -44,100 +52,100 @@
 #endif
 
 //-----------------------------------------------------------------------------
-// 2D linear interpolation
+// 1D linear interpolation
 //-----------------------------------------------------------------------------
 
 template <class T>
-inline T interpolate( int16_t x,           // target point
-                      int16_t x1, T y1,    // point left 
-                      int16_t x2, T y2 )   // point right
+inline T interpolate( int16_t x, int16_t x_1, int16_t x_2, T y_1, T y_2 ) 
 {
-  int16_t   dx  = x2-x1;
-  T         dy  = y2-y1;
+  T   one   = 1.0f; // avoid ambigious operator overload
+
+  // cast integer indexes to T
+  T   _x    = x;
+  T   _x_1  = x_1;
+  T   _x_2  = x_2;
   
-//  return y1 + (x-x1) * (dy/dx); // avoid ambigious operator overloading:
+  T   dx    = (_x - _x_1) / (_x_2 - _x_1);  //  0 <= dx <= 1
 
-  T       delta = x-x1;
-  T       dydx  = dy/dx;
-
-  return y1 + delta * dydx;
+  return (one-dx)*y_1 + dx*y_2;
 }
 
 
 //-----------------------------------------------------------------------------
-// 3D bilinear interpolation
+// 2D bilinear interpolation
 //-----------------------------------------------------------------------------
 
 template <class T>
-inline T interpolate( int16_t x,  int16_t y, 
-                      int16_t x1, int16_t x2, 
-                      int16_t y1, int16_t y2, 
-                      T z1, T z2 )
+inline T interpolate( int16_t x1,  int16_t x2, 
+                      int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
+                            T y_1,       T y_2,       T y_3,       T y_4 )
 {
-  int16_t   dx  = x2-x1;
-  int16_t   dy  = y2-y1;
-  T         dz  = z2-z1;
+  T   one   = 1.0f; // avoid ambigious operator overload
+
+  // cast integer indexes to T
+  T   _x1   = x1;
+  T   _x2   = x2;
+  T   _x_1  = x_1;
+  T   _x_2  = x_2;
+  T   _x_3  = x_3;
+  T   _x_4  = x_4;
   
-//  return z1 + (x-x1)*(dz/dx) + (y-y1)*(dz/dy); // avoid ambig oper overload:
+  T   dx1   = (_x1 - _x_1) / (_x_2 - _x_1);  // 0 <= dx1 <= 1
+  T   dx2   = (_x2 - _x_3) / (_x_4 - _x_3);  // 0 <= dx2 <= 1
 
-  T         deltax = x-x1;
-  T         deltay = y-y1;
-  T         dzdx  = dz/dx;
-  T         dzdy  = dz/dy;
-
-  return z1 + deltax * dzdx + deltay * dzdy;
+  return (one-dx1)*(one-dx2)*y_1 + dx1*(one-dx2)*y_2 + 
+                     dx1*dx2*y_3 + (one-dx1)*dx2*y_4;
 }
 
 #ifdef SUPPORT_INTEGER_ARITMETHIC
+
+//-----------------------------------------------------------------------------
+// 1D specialization for integers by casting to Fix16 
+//-----------------------------------------------------------------------------
+
+template<>
+inline int8_t interpolate( int16_t x,  int16_t x_1, int16_t x_2, 
+                           int8_t  y_1, int8_t y_2 )
+{
+  return static_cast<int16_t>( interpolate( x, x_1, x_2, 
+                                           static_cast<Fix16>(y_1),  
+                                           static_cast<Fix16>(y_2)  ));
+}
+
+template<>
+inline int16_t interpolate( int16_t x,   int16_t x_1, int16_t x_2, 
+                            int16_t y_1, int16_t y_2 )
+{
+  return static_cast<int16_t>( interpolate( x, x_1, x_2, 
+                                           static_cast<Fix16>(y_1),  
+                                           static_cast<Fix16>(y_2)  ));
+}
+
 
 //-----------------------------------------------------------------------------
 // 2D specialization for integers by casting to Fix16 
 //-----------------------------------------------------------------------------
 
 template<>
-inline int8_t interpolate( int16_t x, 
-                           int16_t x1, int8_t y1, 
-                           int16_t x2, int8_t y2 )
+inline int8_t interpolate( int16_t x1,  int16_t x2,   
+                           int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
+                            int8_t y_1,  int8_t y_2,  int8_t y_3,  int8_t y_4 )
 {
-  return static_cast<int16_t>( interpolate( x, 
-                                           x1, static_cast<Fix16>(y1),  
-                                           x2, static_cast<Fix16>(y2)  ));
+  return static_cast<int16_t>( interpolate(x1, x2, x_1, x_2, x_3, x_4,
+                                static_cast<Fix16>(y_1), static_cast<Fix16>(y_2), 
+                                static_cast<Fix16>(y_3), static_cast<Fix16>(y_4) ));
 }
 
 template<>
-inline int16_t interpolate( int16_t x, 
-                            int16_t x1, int16_t y1, 
-                            int16_t x2, int16_t y2 )
+inline int16_t interpolate( int16_t x1,  int16_t x2,   
+                            int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
+                            int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
 {
-  return static_cast<int16_t>( interpolate( x, 
-                                           x1, static_cast<Fix16>(y1),  
-                                           x2, static_cast<Fix16>(y2)  ));
+  return static_cast<int16_t>( interpolate(x1, x2, x_1, x_2, x_3, x_4,
+                                static_cast<Fix16>(y_1), static_cast<Fix16>(y_2), 
+                                static_cast<Fix16>(y_3), static_cast<Fix16>(y_4) ));
 }
 
-
-//-----------------------------------------------------------------------------
-// 3D specialization for integers by casting to Fix16 
-//-----------------------------------------------------------------------------
-
-template<>
-inline int8_t interpolate( int16_t x , int16_t y,
-                           int16_t x1, int16_t x2, 
-                           int16_t y1, int16_t y2, 
-                           int8_t  z1, int8_t  z2 )
-{
-  return static_cast<int16_t>( interpolate(x, y, x1, x2, y1, y2,
-                                static_cast<Fix16>(z1), static_cast<Fix16>(z2) ));
-}
-
-template<>
-inline int16_t interpolate( int16_t x , int16_t y,
-                            int16_t x1, int16_t x2, 
-                            int16_t y1, int16_t y2, 
-                            int16_t z1, int16_t z2 )
-{
-  return static_cast<int16_t>( interpolate(x, y, x1, x2, y1, y2,
-                                static_cast<Fix16>(z1), static_cast<Fix16>(z2) ));
-}
 
 #endif // SUPPORT_INTEGER_ARITMETHIC
 
