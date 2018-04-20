@@ -1,3 +1,22 @@
+//-----------------------------------------------------------------------------
+// Scratch pad
+//-----------------------------------------------------------------------------
+//
+// Copyright (C) 2018 Arend Lammertink
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation, version 3.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+//-----------------------------------------------------------------------------
 
 #include "Arduino.h"
 #include "Map2D3D.h"
@@ -29,11 +48,17 @@
 /* NOTE: xs MUST be sorted */
 const int16_t  xs[] PROGMEM = { 300,     700,  800,  900,  1500, 1800,   2100, 2500 };
 const int8_t   ys[] PROGMEM = {-127,     -50,  127,    0,    10,   -30,   -50,   10 };
+const byte    ysb[] PROGMEM = {   0,      30,   55,   89,    99,   145,   255,   10 };
+
 
 #define USEPROGMEM
 // In order to use program memory for Fix16's directly, we need to cast to/from int32_t 
+
 #ifdef USEPROGMEM    
-const int32_t ysf[] PROGMEM = {0xFF80B333, 0xFFCE1999, 0x7F0000,  0,  0xD4CCD, 0xFFDF0000, 0xFFDC3333, 0xA0000 };
+// ysf and ysfl contain the same values.
+const int32_t ysf[] PROGMEM = { (int32_t)0xFF80B333,  (int32_t)0xFFCE1999, (int32_t)0x7F0000,  
+                                0,  (int32_t)0xD4CCD, (int32_t)0xFFDF0000, (int32_t)0xFFDC3333, 
+                                (int32_t)0xA0000 };
 const float  ysfl[] PROGMEM = {-127.3, -49.9, 127.0, 0.0,  13.3, -33.0, -35.8, 10.0 };
 #else
 const Fix16   ysf[]         = {-127.3, -49.9, 127,   0,  13.3,   -33, -35.8,   10 };
@@ -79,7 +104,7 @@ void setup()
 
     Serial.println();
     Serial.println( F("Hi there") );
-
+/*
     Table2D<8, int8_t>  test;
     test.setXs_P(xs);
     test.setYs_P(ys);
@@ -91,6 +116,24 @@ void setup()
       Serial.print( F(": ") );
       Serial.println( (int)val );
     }
+*/
+
+    Table2D<8, byte>  testb;
+    testb.setXs_P(xs);
+    testb.setYs_P(ysb);
+
+    for( int idx=250; idx<2550; idx+=50)
+    {
+      byte val = testb.f(idx);
+      Serial.print(idx);
+      Serial.print( F(": ") );
+      Serial.println( (int)val );
+    }
+
+
+/*
+
+    
 
 
     Table2D<8, Fix16>  testFix16;
@@ -146,7 +189,7 @@ void setup()
       Serial.print( F(", ") );
       Serial.println( (float)val2 );
     }
-
+*/
  
 }
 

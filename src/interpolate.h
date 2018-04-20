@@ -10,11 +10,11 @@
 //
 // This library is distributed in the hope that it will be useful, but WITHOUT
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
-// License for more details.
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+// for more details.
 //
-// You should have received a copy of the GNU General Public License along
-// with this library.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU Lesser General Public License
+// along with this library. If not, see <http://www.gnu.org/licenses/>.
 //
 //-----------------------------------------------------------------------------
 // 
@@ -113,6 +113,15 @@ inline int8_t interpolate( int16_t x,  int16_t x_1, int16_t x_2,
 }
 
 template<>
+inline uint8_t interpolate( int16_t x,   int16_t x_1, int16_t x_2, 
+                            uint8_t y_1, uint8_t y_2 )
+{
+  return static_cast<int16_t>( interpolate( x, x_1, x_2, 
+                                           static_cast<Fix16>(y_1),  
+                                           static_cast<Fix16>(y_2)  ));
+}
+
+template<>
 inline int16_t interpolate( int16_t x,   int16_t x_1, int16_t x_2, 
                             int16_t y_1, int16_t y_2 )
 {
@@ -137,6 +146,16 @@ inline int8_t interpolate( int16_t x1,  int16_t x2,
 }
 
 template<>
+inline uint8_t interpolate( int16_t x1,  int16_t x2,   
+                           int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
+                           uint8_t y_1, uint8_t y_2, uint8_t y_3, uint8_t y_4 )
+{
+  return static_cast<int16_t>( interpolate(x1, x2, x_1, x_2, x_3, x_4,
+                                static_cast<Fix16>(y_1), static_cast<Fix16>(y_2), 
+                                static_cast<Fix16>(y_3), static_cast<Fix16>(y_4) ));
+}
+
+template<>
 inline int16_t interpolate( int16_t x1,  int16_t x2,   
                             int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
                             int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
@@ -145,7 +164,6 @@ inline int16_t interpolate( int16_t x1,  int16_t x2,
                                 static_cast<Fix16>(y_1), static_cast<Fix16>(y_2), 
                                 static_cast<Fix16>(y_3), static_cast<Fix16>(y_4) ));
 }
-
 
 #endif // SUPPORT_INTEGER_ARITMETHIC
 
