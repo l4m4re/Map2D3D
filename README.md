@@ -11,13 +11,13 @@ floats on a platform without FPU) requires libfixmath.
 
 See:
 
-(https:en.wikipedia.org/wiki/Libfixmath)
+[https:en.wikipedia.org/wiki/Libfixmath](https:en.wikipedia.org/wiki/Libfixmath)
 
-(https:github.com/PetteriAimonen/libfixmath)
+[https:github.com/PetteriAimonen/libfixmath](https:github.com/PetteriAimonen/libfixmath)
 
 And my repository for an Arduino version:
 
-(https:github.com/l4m4re/Arduino_fixpt)
+[https:github.com/l4m4re/Arduino_fixpt](https:github.com/l4m4re/Arduino_fixpt)
 
 
 Description:
@@ -52,7 +52,7 @@ input values, which can then be used to approximate the function.
 An example of such a function is the Volumetric Efficiency (VE) of an
 engine as a function of RPM and the pressure in the inlet manifold:
 
-(https:en.wikipedia.org/wiki/Volumetric_efficiency)
+[https:en.wikipedia.org/wiki/Volumetric_efficiency](https:en.wikipedia.org/wiki/Volumetric_efficiency)
 
 "Volumetric efficiency in an internal combustion engine design refers to
 the efficiency with which the engine can move the charge of fuel and air
