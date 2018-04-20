@@ -17,13 +17,13 @@ Description:
 ------------
 
 Maps or lookup tables (LUTs) are used to approximate a multidimensional
-function *y = f(X)*, with *y* a single dimensional value and *X* an *n*
-dimensional vector *X = (x1, x2, ... xn)*. Usually, this technique is used to
+function **y = f(X)**, with **y** a single dimensional value and **X** an **n**
+dimensional vector **X = (x1, x2, ... xn)**. Usually, this technique is used to
 either speed up te computation of computationally expensive functions (such as
 sin, cos or tan) or to approximate functions with unkown characteristics.
 
 For the one dimensional case, two arrays are used to store a number of known
-values for *y = f(x)*, as follows:
+values for **y = f(x)**, as follows:
 
     ys[i] = f( xs[i] )
     
@@ -32,7 +32,7 @@ values for y = f(X) = f(x1,x2), as follows::
 
     ys[i][j] = f( x1s[i], x2s[j] )
 
-In order to approximate *f(X)* at any point within the range of stored values,
+In order to approximate **f(X)** at any point within the range of stored values,
 we search the xs array(s) to find the nearest known X-es and lineary
 interpolate the known result stored in the ys array.    
 
