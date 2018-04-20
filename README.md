@@ -28,7 +28,7 @@ values for **y = f(x)**, as follows:
     ys[i] = f( xs[i] )
     
 For the two dimensional case, three arrays are used to store a number of known
-values for y = f(X) = f(x1,x2), as follows::
+values for **y = f(X) = f(x1,x2)**, as follows::
 
     ys[i][j] = f( x1s[i], x2s[j] )
 
