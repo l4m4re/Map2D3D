@@ -98,13 +98,8 @@ template<int S, typename X, typename Y> // S: size, X,Y: data types
 class Table2D
 {
 public:
-  /*
-                  Table2D()
-    {
-      static_assert( (!std::is_same<T,uint16_t>)), "don't do that" );
-    }
-    */
-    int           sizeX()               { return S; }
+
+    inline int    sizeX()               { return S; }
 
     void          setXs( const X* xss ) 
                         { memcpy( xs, xss, S*sizeof(X) ); }
@@ -168,8 +163,8 @@ class Table3D
 {
 public:
 
-    int           sizeX1()                { return R; }
-    int           sizeX2()                { return S; }
+    inline int    sizeX1()                { return R; }
+    inline int    sizeX2()                { return S; }
 
 
     void          setX1s( const X* x1ss ) 
@@ -240,7 +235,7 @@ public:
                                         ys[i][j], ys[i+1][j], ys[i+1][j+1], ys[i][j+1]);   
                   }
 
-private:
+protected:
 
     X             x1s[S];
     X             x2s[S];
