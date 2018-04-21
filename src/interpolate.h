@@ -54,17 +54,17 @@
 // 1D linear interpolation
 //-----------------------------------------------------------------------------
 
-template <class T>
-inline T interpolate( int16_t x, int16_t x_1, int16_t x_2, T y_1, T y_2 ) 
+template <typename X, typename Y>
+inline Y interpolate( X x, X x_1, X x_2, Y y_1, Y y_2 ) 
 {
-  T   one   = 1.0f; // avoid ambigious operator overload
-
-  // cast integer indexes to T
-  T   _x    = x;
-  T   _x_1  = x_1;
-  T   _x_2  = x_2;
+  Y   one   = 1.0f; // avoid ambigious operator overload
   
-  T   dx    = (_x - _x_1) / (_x_2 - _x_1);  //  0 <= dx <= 1
+  // cast indexes to Y
+  Y   _x    = x;
+  Y   _x_1  = x_1;
+  Y   _x_2  = x_2;
+
+  Y   dx    = (_x - _x_1) / (_x_2 - _x_1);  //  0 <= dx <= 1
 
   return (one-dx)*y_1 + dx*y_2;
 }
@@ -74,95 +74,37 @@ inline T interpolate( int16_t x, int16_t x_1, int16_t x_2, T y_1, T y_2 )
 // 2D bilinear interpolation
 //-----------------------------------------------------------------------------
 
-template <class T>
-inline T interpolate( int16_t x1,  int16_t x2, 
-                      int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
-                            T y_1,       T y_2,       T y_3,       T y_4 )
+template <typename X, typename Y>
+inline Y interpolate( X x1, X x2, X x_1, X x_2, X x_3, X x_4,
+                                  Y y_1, Y y_2, Y y_3, Y y_4 )
 {
-  T   one   = 1.0f; // avoid ambigious operator overload
+  Y   one   = 1.0f; // avoid ambigious operator overload
 
-  // cast integer indexes to T
-  T   _x1   = x1;
-  T   _x2   = x2;
-  T   _x_1  = x_1;
-  T   _x_2  = x_2;
-  T   _x_3  = x_3;
-  T   _x_4  = x_4;
+  // cast indexes to Y
+  Y   _x1   = x1;
+  Y   _x2   = x2;
+  Y   _x_1  = x_1;
+  Y   _x_2  = x_2;
+  Y   _x_3  = x_3;
+  Y   _x_4  = x_4;
   
-  T   dx1   = (_x1 - _x_1) / (_x_2 - _x_1);  // 0 <= dx1 <= 1
-  T   dx2   = (_x2 - _x_3) / (_x_4 - _x_3);  // 0 <= dx2 <= 1
+  Y   dx1   = (_x1 - _x_1) / (_x_2 - _x_1);  // 0 <= dx1 <= 1
+  Y   dx2   = (_x2 - _x_3) / (_x_4 - _x_3);  // 0 <= dx2 <= 1
 
   return (one-dx1)*(one-dx2)*y_1 + dx1*(one-dx2)*y_2 + 
                      dx1*dx2*y_3 + (one-dx1)*dx2*y_4;
 }
 
+
+//-----------------------------------------------------------------------------
+// Specialization for integers by casting to Fix16 
+//-----------------------------------------------------------------------------
+
 #ifdef SUPPORT_INTEGER_ARITMETHIC
 
-//-----------------------------------------------------------------------------
-// 1D specialization for integers by casting to Fix16 
-//-----------------------------------------------------------------------------
-
-template<>
-inline int8_t interpolate( int16_t x,  int16_t x_1, int16_t x_2, 
-                           int8_t  y_1, int8_t y_2 )
-{
-  return static_cast<int16_t>( interpolate( x, x_1, x_2, 
-                                           static_cast<Fix16>(y_1),  
-                                           static_cast<Fix16>(y_2)  ));
-}
-
-template<>
-inline uint8_t interpolate( int16_t x,   int16_t x_1, int16_t x_2, 
-                            uint8_t y_1, uint8_t y_2 )
-{
-  return static_cast<int16_t>( interpolate( x, x_1, x_2, 
-                                           static_cast<Fix16>(y_1),  
-                                           static_cast<Fix16>(y_2)  ));
-}
-
-template<>
-inline int16_t interpolate( int16_t x,   int16_t x_1, int16_t x_2, 
-                            int16_t y_1, int16_t y_2 )
-{
-  return static_cast<int16_t>( interpolate( x, x_1, x_2, 
-                                           static_cast<Fix16>(y_1),  
-                                           static_cast<Fix16>(y_2)  ));
-}
-
-
-//-----------------------------------------------------------------------------
-// 2D specialization for integers by casting to Fix16 
-//-----------------------------------------------------------------------------
-
-template<>
-inline int8_t interpolate( int16_t x1,  int16_t x2,   
-                           int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
-                            int8_t y_1,  int8_t y_2,  int8_t y_3,  int8_t y_4 )
-{
-  return static_cast<int16_t>( interpolate(x1, x2, x_1, x_2, x_3, x_4,
-                                static_cast<Fix16>(y_1), static_cast<Fix16>(y_2), 
-                                static_cast<Fix16>(y_3), static_cast<Fix16>(y_4) ));
-}
-
-template<>
-inline uint8_t interpolate( int16_t x1,  int16_t x2,   
-                           int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
-                           uint8_t y_1, uint8_t y_2, uint8_t y_3, uint8_t y_4 )
-{
-  return static_cast<int16_t>( interpolate(x1, x2, x_1, x_2, x_3, x_4,
-                                static_cast<Fix16>(y_1), static_cast<Fix16>(y_2), 
-                                static_cast<Fix16>(y_3), static_cast<Fix16>(y_4) ));
-}
-
-template<>
-inline int16_t interpolate( int16_t x1,  int16_t x2,   
-                            int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
-                            int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
-{
-  return static_cast<int16_t>( interpolate(x1, x2, x_1, x_2, x_3, x_4,
-                                static_cast<Fix16>(y_1), static_cast<Fix16>(y_2), 
-                                static_cast<Fix16>(y_3), static_cast<Fix16>(y_4) ));
-}
+// Specializations generated by python script.
+# include "interpol1d_spec.h"
+# include "interpol2d_spec.h"
 
 #endif // SUPPORT_INTEGER_ARITMETHIC
 

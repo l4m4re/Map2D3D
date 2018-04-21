@@ -1,4 +1,3 @@
-
 ----------------------------
       2D Maps test
 ----------------------------
@@ -101,4 +100,13 @@ rpm  char  fix16   fix16   float   double
 2400:   -2   -1.45   -1.45   -1.45   -1.45
 2450:    4    4.27    4.27    4.28    4.28
 2500:   10   10.00   10.00   10.00   10.00
+------------------------------------------
+               Sizes
+------------------------------------------
+Size of testInt8     with size: 8: 24
+Size of testFix16    with size: 8: 48
+Size of testFix16FromFloat   with size: 8: 48
+Size of testFloat    with size: 8: 48
+Size of testDouble   with size: 8: 48
+------------------------------------------
 

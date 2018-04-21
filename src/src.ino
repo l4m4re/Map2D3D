@@ -105,7 +105,7 @@ void setup()
     Serial.println();
     Serial.println( F("Hi there") );
 /*
-    iTable2D<8, int8_t>  test;
+    Table2D<8, int16_t, int8_t>  test;
     test.setXs_P(xs);
     test.setYs_P(ys);
 
@@ -118,7 +118,7 @@ void setup()
     }
 */
 
-    iTable2D<8, byte>  testb;
+    Table2D<8, int16_t, byte>  testb;
     testb.setXs_P(xs);
     testb.setYs_P(ysb);
 
@@ -136,7 +136,7 @@ void setup()
     
 
 
-    iTable2D<8, Fix16>  testFix16;
+    Table2D<8, int16_t, Fix16>  testFix16;
     testFix16.setXs_P(xs);
     
 #ifdef USEPROGMEM    
@@ -170,7 +170,7 @@ void setup()
 
 //  Test Fix16 from float and compare with testFix16
 
-    iTable2D<8, Fix16>  testFix16FromFloat;
+    Table2D<8, int16_t, Fix16>  testFix16FromFloat;
     testFix16FromFloat.setXs_P(xs);
 
 #ifdef USEPROGMEM

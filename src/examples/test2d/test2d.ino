@@ -26,6 +26,9 @@
 //#include <fix16.h>
 #include <fix16.hpp>
 
+
+using namespace std;
+
 #define BAUDRATE    115200
 
 // Stuff needed for printing
@@ -56,10 +59,14 @@ const int32_t ysf16[] PROGMEM = { (int32_t)0xFF80B333,  (int32_t)0xFFCE1999, (in
 //-----------------------------------------------------------------------------
 // Functions
 //-----------------------------------------------------------------------------
+
                                 
 void setup()
 {
     initSerial();
+
+
+    
 
     Serial.println();
     Serial.println( F("----------------------------") );
@@ -69,7 +76,7 @@ void setup()
     Serial.println( F("----------------------------") );
 
 
-    iTable2D<8, byte>  testb;
+    Table2D<8, int16_t, byte>  testb;
     testb.setXs_P(xs);
     testb.setYs_P(ysb);
 
@@ -87,29 +94,29 @@ void setup()
     Serial.println( F("rpm  char  fix16   fix16   float   double ") );
     Serial.println( F("------------------------------------------") );
 
-    iTable2D<8, int8_t>  test;
-    test.setXs_P(xs);
-    test.setYs_P(ys8);
+    Table2D<8, int16_t, int8_t>  testInt8;
+    testInt8.setXs_P(xs);
+    testInt8.setYs_P(ys8);
 
-    iTable2D<8, Fix16>  testFix16;
+    Table2D<8, int16_t, Fix16>  testFix16;
     testFix16.setXs_P(xs);
     testFix16.setYs_P( (const Fix16*)ysf16 );
 
-    iTable2D<8, Fix16>  testFix16FromFloat;
+    Table2D<8, int16_t, Fix16>  testFix16FromFloat;
     testFix16FromFloat.setXs_P(xs);
     testFix16FromFloat.setYsFromFloat_P(ysfl);
 
-    iTable2D<8, float> testFloat;
+    Table2D<8, int16_t, float> testFloat;
     testFloat.setXs_P(xs);
     testFloat.setYsFromFloat_P(ysfl);
 
-    iTable2D<8, float> testDouble;
+    Table2D<8, int16_t, double> testDouble;
     testDouble.setXs_P(xs);
     testDouble.setYsFromFloat_P(ysfl);
 
     for( int idx=250; idx<2550; idx+=50)
     {
-      int8_t val8   = test.f(idx); 
+      int8_t val8   = testInt8.f(idx); 
       float val16ff = testFix16FromFloat.f(idx);
       float val16   = testFix16.f(idx);
       float valf    = testFloat.f(idx);
@@ -122,6 +129,22 @@ void setup()
       mPrintFloat(vald);      
       Serial.println();
     }
+
+    Serial.println( F("------------------------------------------") );
+    Serial.println( F("               Sizes") );
+    Serial.println( F("------------------------------------------") );
+
+#define sprint(expression) Serial.print(F("Size of ")); Serial.print( F(#expression) );  \
+            Serial.print( F("\t with size: ") ); Serial.print( expression.sizeX() ); \
+            Serial.print( F(": ") ); Serial.println( sizeof(expression) )
+
+   sprint( testInt8 );
+   sprint( testFix16 );
+   sprint( testFix16FromFloat );
+   sprint( testFloat );
+   sprint( testDouble );
+
+   Serial.println( F("------------------------------------------") );
 }
 
 

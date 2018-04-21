@@ -98,7 +98,12 @@ template<int S, typename X, typename Y> // S: size, X,Y: data types
 class Table2D
 {
 public:
-
+  /*
+                  Table2D()
+    {
+      static_assert( (!std::is_same<T,uint16_t>)), "don't do that" );
+    }
+    */
     int           sizeX()               { return S; }
 
     void          setXs( const X* xss ) 
@@ -106,6 +111,26 @@ public:
 
     void          setYs( const Y* yss )
                         { memcpy( ys, yss, S*sizeof(Y) ); }
+
+    void          setYsFromFloat( const float* yss ) 
+                  {
+                      for( int i=0; i<S; i++ ) { ys[i] = static_cast<Y>(yss[i]); }
+                  }
+
+#ifdef ARDUINO    // Initialization from array in PROGMEM
+
+    void          setXs_P( const int16_t* xss ) 
+                        { memcpy_P( xs, xss, S*sizeof(int16_t) ); }
+
+    void          setYs_P( const Y* yss )
+                        { memcpy_P( ys, yss, S*sizeof(Y) ); }
+                        
+    void          setYsFromFloat_P( const float* yss )
+                  {
+                      for( int i=0; i<S; i++ ) 
+                          { ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
+                  }
+#endif
 
     Y             f( X x )              // approximate f(x)
                   {    
@@ -126,7 +151,7 @@ public:
 
                   }
 
-//protected:
+protected:
 
     X             xs[S];
     Y             ys[S];
@@ -135,43 +160,10 @@ public:
 
 
 //-----------------------------------------------------------------------------
-// 2D lookup table / fuel map with int16 for the x axis.
-//-----------------------------------------------------------------------------
-
-template<int S, typename Y>  // S: determine size at compile time, T: data type
-class iTable2D: public Table2D<S, int16_t, Y>
-{
-
-public:
-
-    void          setYsFromFloat( const float* yss ) 
-                  {
-                      for( int i=0; i<S; i++ ) { this->ys[i] = static_cast<Y>(yss[i]); }
-                  }
-
-#ifdef ARDUINO    // Initialization from array in PROGMEM
-
-    void          setXs_P( const int16_t* xss ) 
-                        { memcpy_P( this->xs, xss, S*sizeof(int16_t) ); }
-
-    void          setYs_P( const Y* yss )
-                        { memcpy_P( this->ys, yss, S*sizeof(Y) ); }
-                        
-    void          setYsFromFloat_P( const float* yss )
-                  {
-                      for( int i=0; i<S; i++ ) 
-                          { this->ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
-                  }
-#endif
-};
-
-
-
-//-----------------------------------------------------------------------------
 // 3D lookup table / fuel map. X axis must be sorted in ascending order.
 //-----------------------------------------------------------------------------
 
-template<int R, int S, typename X, typename Y> // R,S: size, Y,Y: data type
+template<int R, int S, typename X, typename Y> // R,S: size, X,Y: data type
 class Table3D
 {
 public:
@@ -188,6 +180,32 @@ public:
 
     void          setYs( const Y* yss )
                         { memcpy( ys, yss, R*S*sizeof(Y) ); }
+
+
+    void          setYsFromFloat( const float* yss ) 
+                  {
+                      for( int i=0; i<R*S; i++ ) 
+                        { ys[i] = static_cast<Y>(yss[i]); }
+                  }
+
+#ifdef ARDUINO    // Initialize from array in PROGMEM
+
+    void          setX1s_P( const int16_t* x1ss ) 
+                        { memcpy_P( x1s, x1ss, R*sizeof(int16_t) ); }
+
+    void          setX2s_P( const int16_t* x2ss ) 
+                        { memcpy_P( x2s, x2ss, S*sizeof(int16_t) ); }
+
+    void          setYs_P( const Y* yss )
+                        { memcpy_P( ys, yss, R*S*sizeof(Y) ); }
+                        
+    void          setYsFromFloat_P( const float* yss )
+                  {
+                      for( int i=0; i<R*S; i++ ) 
+                          { ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
+                  }
+
+#endif
 
     Y             f( X x1, X x2 )
                   {    
@@ -230,42 +248,6 @@ private:
 
 };
 
-
-//-----------------------------------------------------------------------------
-// 3D lookup table / fuel map with int16 for the x axis.
-//-----------------------------------------------------------------------------
-
-template<int R, int S, typename Y>  // R,S: size, Y: data type
-class iTable3D: public Table3D<R, S, int16_t, Y>
-{
-
-public:
-
-    void          setYsFromFloat( const float* yss ) 
-                  {
-                      for( int i=0; i<R*S; i++ ) 
-                        { this->ys[i] = static_cast<Y>(yss[i]); }
-                  }
-
-#ifdef ARDUINO    // Initialize from array in PROGMEM
-
-    void          setX1s_P( const int16_t* x1ss ) 
-                        { memcpy_P( this->x1s, x1ss, R*sizeof(int16_t) ); }
-
-    void          setX2s_P( const int16_t* x2ss ) 
-                        { memcpy_P( this->x2s, x2ss, S*sizeof(int16_t) ); }
-
-    void          setYs_P( const Y* yss )
-                        { memcpy_P( this->ys, yss, R*S*sizeof(Y) ); }
-                        
-    void          setYsFromFloat_P( const float* yss )
-                  {
-                      for( int i=0; i<R*S; i++ ) 
-                          { this->ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
-                  }
-#endif
-
-};
 
 //-----------------------------------------------------------------------------
 // 
