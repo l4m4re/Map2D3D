@@ -73,7 +73,7 @@ void setup()
     Serial.println( F("      2D Maps test") );
     Serial.println( F("------------------------------") );
     Serial.println( F("Unsigned: only char/byte type.") );
-    Serial.println( F("---i--------------------------") );
+    Serial.println( F("------------------------------") );
 
 
     Table2D<8, int16_t, byte>  testb;
