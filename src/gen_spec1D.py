@@ -28,7 +28,7 @@ print "#define _interpol1d_spec_h"
 print 
 
 for X in ["int8_t", "uint8_t", "int16_t", "uint16_t"]:
-  for Y in ["int8_t", "uint8_t", "int16_t", "Fix16", "float", "double"]:
+  for Y in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16", "float", "double"]:
     R = Y
     if R in ["int8_t", "uint8_t"]:
       R = "int16_t"
@@ -47,9 +47,12 @@ for X in ["int8_t", "uint8_t", "int16_t", "uint16_t"]:
     # uint16_t must be casted to float before it van be casted to Fix16
     if X == "uint16_t" and C == "Fix16":
       prcx += "static_cast<float>("
+# TODO: check whether or not casting to int32 works.
+#      prcx += "static_cast<int32_t>("
       pocx = "))"
     if Y == "uint16_t" and C == "Fix16":
       prcy += "static_cast<float>("
+#      prcy += "static_cast<int32_t>("
       pocy = "))"
 
     print"template<>"

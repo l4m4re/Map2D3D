@@ -28,7 +28,7 @@ print "#define _interpol2d_spec_h"
 print 
 
 for X in ["int8_t", "uint8_t", "int16_t", "uint16_t"]:
-  for Y in ["int8_t", "uint8_t", "int16_t", "Fix16", "float", "double"]:
+  for Y in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16", "float", "double"]:
     R = Y
     if R in ["int8_t", "uint8_t"]:
       R = "int16_t"

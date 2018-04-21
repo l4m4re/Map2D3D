@@ -69,27 +69,35 @@ void setup()
     
 
     Serial.println();
-    Serial.println( F("----------------------------") );
+    Serial.println( F("------------------------------") );
     Serial.println( F("      2D Maps test") );
-    Serial.println( F("----------------------------") );
-    Serial.println( F("Signed: only char/byte type.") );
-    Serial.println( F("----------------------------") );
+    Serial.println( F("------------------------------") );
+    Serial.println( F("Unsigned: only char/byte type.") );
+    Serial.println( F("---i--------------------------") );
 
 
     Table2D<8, int16_t, byte>  testb;
     testb.setXs_P(xs);
     testb.setYs_P(ysb);
 
+    Table2D<8, uint16_t, byte>  testub;
+    testub.setXs_P(xs);
+    testub.setYs_P(ysb);
+
+
     for( int idx=250; idx<2550; idx+=50)
     {
       byte val = testb.f(idx);
+      byte valus = testub.f(idx);
       Serial.print(idx);
       Serial.print( F(": ") );
-      Serial.println( (int)val );
+      Serial.print( (int)val );
+      Serial.print( F(", ") );
+      Serial.println( (int)valus );
     }
 
     Serial.println( F("------------------------------------------") );
-    Serial.println( F("               Unsigned") );
+    Serial.println( F("               Signed") );
     Serial.println( F("------------------------------------------") );
     Serial.println( F("rpm  char  fix16   fix16   float   double ") );
     Serial.println( F("------------------------------------------") );
