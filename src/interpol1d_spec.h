@@ -387,4 +387,56 @@ inline double interpolate( uint16_t x, uint16_t x_1, uint16_t x_2,
 }
 
 
+template<>
+inline int8_t interpolate( Fix16 x, Fix16 x_1, Fix16 x_2,
+                            int8_t y_1, int8_t y_2 )
+{
+  return static_cast< int16_t >(
+                  interpolate( static_cast<Fix16>(x),
+                               static_cast<Fix16>(x_1),
+                               static_cast<Fix16>(x_2),
+                               static_cast<Fix16>(y_1),
+                               static_cast<Fix16>(y_2) ));
+}
+
+
+template<>
+inline uint8_t interpolate( Fix16 x, Fix16 x_1, Fix16 x_2,
+                            uint8_t y_1, uint8_t y_2 )
+{
+  return static_cast< int16_t >(
+                  interpolate( static_cast<Fix16>(x),
+                               static_cast<Fix16>(x_1),
+                               static_cast<Fix16>(x_2),
+                               static_cast<Fix16>(y_1),
+                               static_cast<Fix16>(y_2) ));
+}
+
+
+template<>
+inline int16_t interpolate( Fix16 x, Fix16 x_1, Fix16 x_2,
+                            int16_t y_1, int16_t y_2 )
+{
+  return static_cast< int16_t >(
+                  interpolate( static_cast<Fix16>(x),
+                               static_cast<Fix16>(x_1),
+                               static_cast<Fix16>(x_2),
+                               static_cast<Fix16>(y_1),
+                               static_cast<Fix16>(y_2) ));
+}
+
+
+template<>
+inline uint16_t interpolate( Fix16 x, Fix16 x_1, Fix16 x_2,
+                            uint16_t y_1, uint16_t y_2 )
+{
+  return static_cast< int32_t >(
+                  interpolate( static_cast<Fix16>(x),
+                               static_cast<Fix16>(x_1),
+                               static_cast<Fix16>(x_2),
+                               static_cast<Fix16>(static_cast<float>(y_1)),
+                               static_cast<Fix16>(static_cast<float>(y_2)) ));
+}
+
+
 #endif

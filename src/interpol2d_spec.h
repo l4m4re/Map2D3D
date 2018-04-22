@@ -527,4 +527,76 @@ inline double interpolate( uint16_t x1, uint16_t x2,
 }
 
 
+inline int8_t interpolate( Fix16 x1, Fix16 x2,
+                            Fix16 x_1, Fix16 x_2, Fix16 x_3, Fix16 x_4,
+                            int8_t y_1, int8_t y_2, int8_t y_3, int8_t y_4 )
+{
+  return static_cast< int16_t >(
+                  interpolate( static_cast<Fix16>(x1),
+                               static_cast<Fix16>(x2),
+                               static_cast<Fix16>(x_1),
+                               static_cast<Fix16>(x_2),
+                               static_cast<Fix16>(x_3),
+                               static_cast<Fix16>(x_4),
+                               static_cast<Fix16>(y_1),
+                               static_cast<Fix16>(y_2),
+                               static_cast<Fix16>(y_3),
+                               static_cast<Fix16>(y_4) ));
+}
+
+
+inline uint8_t interpolate( Fix16 x1, Fix16 x2,
+                            Fix16 x_1, Fix16 x_2, Fix16 x_3, Fix16 x_4,
+                            uint8_t y_1, uint8_t y_2, uint8_t y_3, uint8_t y_4 )
+{
+  return static_cast< int16_t >(
+                  interpolate( static_cast<Fix16>(x1),
+                               static_cast<Fix16>(x2),
+                               static_cast<Fix16>(x_1),
+                               static_cast<Fix16>(x_2),
+                               static_cast<Fix16>(x_3),
+                               static_cast<Fix16>(x_4),
+                               static_cast<Fix16>(y_1),
+                               static_cast<Fix16>(y_2),
+                               static_cast<Fix16>(y_3),
+                               static_cast<Fix16>(y_4) ));
+}
+
+
+inline int16_t interpolate( Fix16 x1, Fix16 x2,
+                            Fix16 x_1, Fix16 x_2, Fix16 x_3, Fix16 x_4,
+                            int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
+{
+  return static_cast< int16_t >(
+                  interpolate( static_cast<Fix16>(x1),
+                               static_cast<Fix16>(x2),
+                               static_cast<Fix16>(x_1),
+                               static_cast<Fix16>(x_2),
+                               static_cast<Fix16>(x_3),
+                               static_cast<Fix16>(x_4),
+                               static_cast<Fix16>(y_1),
+                               static_cast<Fix16>(y_2),
+                               static_cast<Fix16>(y_3),
+                               static_cast<Fix16>(y_4) ));
+}
+
+
+inline uint16_t interpolate( Fix16 x1, Fix16 x2,
+                            Fix16 x_1, Fix16 x_2, Fix16 x_3, Fix16 x_4,
+                            uint16_t y_1, uint16_t y_2, uint16_t y_3, uint16_t y_4 )
+{
+  return static_cast< int32_t >(
+                  interpolate( static_cast<Fix16>(x1),
+                               static_cast<Fix16>(x2),
+                               static_cast<Fix16>(x_1),
+                               static_cast<Fix16>(x_2),
+                               static_cast<Fix16>(x_3),
+                               static_cast<Fix16>(x_4),
+                               static_cast<Fix16>(static_cast<float>(y_1)),
+                               static_cast<Fix16>(static_cast<float>(y_2)),
+                               static_cast<Fix16>(static_cast<float>(y_3)),
+                               static_cast<Fix16>(static_cast<float>(y_4)) ));
+}
+
+
 #endif

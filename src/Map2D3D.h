@@ -104,6 +104,11 @@ public:
     void          setXs( const X* xss ) 
                         { memcpy( xs, xss, S*sizeof(X) ); }
 
+    void          setXsFromFloat( const float* xss ) 
+                  {
+                      for( int i=0; i<S; i++ ) { xs[i] = static_cast<X>(xss[i]); }
+                  }                        
+
     void          setYs( const Y* yss )
                         { memcpy( ys, yss, S*sizeof(Y) ); }
 
@@ -114,12 +119,18 @@ public:
 
 #ifdef ARDUINO    // Initialization from array in PROGMEM
 
-    void          setXs_P( const int16_t* xss ) 
-                        { memcpy_P( xs, xss, S*sizeof(int16_t) ); }
+    void          setXs_P( const X* xss ) 
+                        { memcpy_P( xs, xss, S*sizeof(X) ); }
+
+    void          setXsFromFloat_P( const float* xss ) 
+                  {
+                      for( int i=0; i<S; i++ ) { 
+                        xs[i] = static_cast<X>(pgm_read_float_near(xss+i)); }
+                  }  
 
     void          setYs_P( const Y* yss )
                         { memcpy_P( ys, yss, S*sizeof(Y) ); }
-                        
+                       
     void          setYsFromFloat_P( const float* yss )
                   {
                       for( int i=0; i<S; i++ ) 
@@ -185,15 +196,15 @@ public:
 
 #ifdef ARDUINO    // Initialize from array in PROGMEM
 
-    void          setX1s_P( const int16_t* x1ss ) 
-                        { memcpy_P( x1s, x1ss, R*sizeof(int16_t) ); }
+    void          setX1s_P( const X* x1ss ) 
+                        { memcpy_P( x1s, x1ss, R*sizeof(X) ); }
 
-    void          setX2s_P( const int16_t* x2ss ) 
-                        { memcpy_P( x2s, x2ss, S*sizeof(int16_t) ); }
+    void          setX2s_P( const X* x2ss ) 
+                        { memcpy_P( x2s, x2ss, S*sizeof(X) ); }
 
     void          setYs_P( const Y* yss )
                         { memcpy_P( ys, yss, R*S*sizeof(Y) ); }
-                        
+
     void          setYsFromFloat_P( const float* yss )
                   {
                       for( int i=0; i<R*S; i++ ) 

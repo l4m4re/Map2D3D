@@ -104,6 +104,15 @@ void setup()
 
     Serial.println();
     Serial.println( F("Hi there") );
+
+    dprint( INT8_MIN );
+    dprint( INT8_MAX );
+    dprint( INT16_MIN );
+    dprint( INT16_MAX );
+    dprint( INT32_MIN );
+    dprint( INT32_MAX );
+
+    
 /*
     Table2D<8, int16_t, int8_t>  test;
     test.setXs_P(xs);
@@ -116,7 +125,7 @@ void setup()
       Serial.print( F(": ") );
       Serial.println( (int)val );
     }
-*/
+
 
     Table2D<8, int16_t, byte>  testb;
     testb.setXs_P(xs);
@@ -130,8 +139,6 @@ void setup()
       Serial.println( (int)val );
     }
 
-
-/*
 
     
 

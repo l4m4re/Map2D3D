@@ -41,6 +41,17 @@
 #define _INTERPOL_H
 
 //-----------------------------------------------------------------------------
+// TODO :
+//
+//   fix16.h includes a number of lerp (linear interpolation) routines. These
+//   could perhaps be used to speed things up.
+//
+//   There are no routines for casting uint16_t integers to/from Fix16. For
+//   now, we cast to float before casting to Fix16. 
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // Includes
 //-----------------------------------------------------------------------------
 

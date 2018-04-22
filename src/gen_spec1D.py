@@ -27,14 +27,19 @@ print "#ifndef _interpol1d_spec_h"
 print "#define _interpol1d_spec_h"
 print 
 
-for X in ["int8_t", "uint8_t", "int16_t", "uint16_t"]:
+## TODO: check if the fix16_lerp routines may be faster.
+
+for X in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16"]:
   for Y in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16", "float", "double"]:
     R = Y
     if R in ["int8_t", "uint8_t"]:
       R = "int16_t"
     if R in ["uint16_t"]:
       R = "int32_t"
-    
+   
+    if X == "Fix16" and Y == "Fix16":
+      break
+
     C = Y 
     if C in ["int8_t", "uint8_t", "int16_t", "uint16_t"]:
       C = "Fix16"
