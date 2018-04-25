@@ -20,39 +20,40 @@
 // Includes
 //-----------------------------------------------------------------------------
 
-#include "Arduino.h"
 #include "Map2D3D.h"
 
 //#include <fix16.h>
 #include <fix16.hpp>
 
+// Beagle
+#include <stdio.h>
+#include <string.h>
+#define byte uint8_t
+#define F( str )  str
+#define setXs_P   setXs
+#define setYs_P   setYs
+
+//static char             outstr[15];
+//#define mPrintFloat(f)  dtostrf(f, 8, 2, outstr); printf("%s\n", outstr);
 
 using namespace std;
-
-#define BAUDRATE    115200
-
-// Stuff needed for printing
-FILE                    serial_stdout;
-static char             outstr[15];
-#define mPrintFloat(f)  dtostrf(f, 8, 2, outstr); Serial.print(outstr);
-
 
 //-----------------------------------------------------------------------------
 // Globals
 //-----------------------------------------------------------------------------
 
 /* NOTE: xs MUST be sorted */
-const int16_t   xs[] PROGMEM = { 300,     700,  800,  900,  1500, 1800,   2100, 2500 };
+const int16_t   xs[]  = { 300,     700,  800,  900,  1500, 1800,   2100, 2500 };
 
 // byte == unsigned char.
-const byte     ysb[] PROGMEM = {   0,      30,   55,   89,    99,   145,   255,   10 };
+const byte     ysb[]  = {   0,      30,   55,   89,    99,   145,   255,   10 };
 
 // signed. All tables contain (about) the same values. 
-const int8_t   ys8[] PROGMEM = {-127,   -50,   127,    0,    13,   -33,   -36,   10 };
-const float   ysfl[] PROGMEM = {-127.3, -49.9, 127.0,  0.0,  13.3, -33.0, -35.8, 10.0 };
+const int8_t   ys8[]  = {-127,   -50,   127,    0,    13,   -33,   -36,   10 };
+const float   ysfl[]  = {-127.3, -49.9, 127.0,  0.0,  13.3, -33.0, -35.8, 10.0 };
 
 // In order to store Fix16 in memory, we need to store it's int32 representationr: 
-const int32_t ysf16[] PROGMEM = { (int32_t)0xFF80B333,  (int32_t)0xFFCE1999, (int32_t)0x7F0000,  
+const int32_t ysf16[]  = { (int32_t)0xFF80B333,  (int32_t)0xFFCE1999, (int32_t)0x7F0000,  
                                 0,  (int32_t)0xD4CCD, (int32_t)0xFFDF0000, (int32_t)0xFFDC3333, 
                                 (int32_t)0xA0000 };
 
@@ -61,25 +62,24 @@ const int32_t ysf16[] PROGMEM = { (int32_t)0xFF80B333,  (int32_t)0xFFCE1999, (in
 //-----------------------------------------------------------------------------
 
                                 
-void setup()
+int main()
 {
-    initSerial();
     
 
-    Serial.println();
-    Serial.println( F("------------------------------") );
-    Serial.println( F("      2D Maps test") );
-    Serial.println( F("------------------------------") );
-    Serial.println( F("Unsigned: only char/byte type.") );
-    Serial.println( F("------------------------------") );
+    printf( "%s\n","------------------------------" );
+    printf( "%s\n","      2D Maps test" );
+    printf( "%s\n","------------------------------" );
+    printf( "%s\n","Unsigned: only char/byte type." );
+    printf( "%s\n","------------------------------" );
 
 
     Map2D<8, int16_t, byte>  testb;
-    testb.setXs_P(xs);
-    testb.setYs_P(ysb);
+    testb.setXs(xs);
+    testb.setYs(ysb);
+
 
     Map2D<8, uint16_t, byte>  testub;
-    testub.setXs_P(xs);
+    testub.setXs_P((uint16_t*)xs);
     testub.setYs_P(ysb);
 
 
@@ -87,18 +87,19 @@ void setup()
     {
       byte val = testb.f(idx);
       byte valus = testub.f(idx);
-      Serial.print(idx);
-      Serial.print( F(": ") );
-      Serial.print( (int)val );
-      Serial.print( F(", ") );
-      Serial.println( (int)valus );
+      printf( "%d", idx);
+      printf( "%s", F(": ") );
+      printf( "%d", static_cast<int>(val) );
+      printf( "%s", F(", ") );
+      printf( "%d\n", static_cast<int>(valus) );
     }
 
-    Serial.println( F("------------------------------------------") );
-    Serial.println( F("               Signed") );
-    Serial.println( F("------------------------------------------") );
-    Serial.println( F("rpm  char  fix16   fix16   float   double ") );
-    Serial.println( F("------------------------------------------") );
+/*
+    printf( "%s\n",( F("------------------------------------------") );
+    printf( "%s\n",( F("               Signed") );
+    printf( "%s\n",( F("------------------------------------------") );
+    printf( "%s\n",( F("rpm  char  fix16   fix16   float   double ") );
+    printf( "%s\n",( F("------------------------------------------") );
 
     Map2D<8, int16_t, int8_t>  testInt8;
     testInt8.setXs_P(xs);
@@ -133,16 +134,16 @@ void setup()
       mPrintFloat(val16ff);
       mPrintFloat(valf);      
       mPrintFloat(vald);      
-      Serial.println();
+      printf( "%s\n",();
     }
 
-    Serial.println( F("------------------------------------------") );
-    Serial.println( F("               Sizes") );
-    Serial.println( F("------------------------------------------") );
+    printf( "%s\n",( F("------------------------------------------") );
+    printf( "%s\n",( F("               Sizes") );
+    printf( "%s\n",( F("------------------------------------------") );
 
-#define sprint(expression) Serial.print(F("Size of ")); Serial.print( F(#expression) );  \
-            Serial.print( F("\t with size: ") ); Serial.print( expression.sizeX() ); \
-            Serial.print( F(": ") ); Serial.println( sizeof(expression) )
+#define sprint(expression) printf( "%s",F("Size of ")); printf( "%s", F(#expression) );  \
+            printf( "%s", F("\t with size: ") ); printf( "%s", expression.sizeX() ); \
+            printf( "%s", F(": ") ); printf( "%s\n",( sizeof(expression) )
 
    sprint( testInt8 );
    sprint( testFix16 );
@@ -150,28 +151,12 @@ void setup()
    sprint( testFloat );
    sprint( testDouble );
 
-   Serial.println( F("------------------------------------------") );
+   printf( "%s\n",( F("------------------------------------------") );
+
+*/
 }
 
 
-void loop()
-{}
-
-// Function that printf and related will use to print
-int serial_putchar(char c, FILE* f) {
-    if (c == '\n') serial_putchar('\r', f);
-    return Serial.write(c) == 1? 0 : 1;
-}
-
-void initSerial()
-{
-    // Open serial port with a baud rate of BAUDRATE b/s
-    Serial.begin(BAUDRATE);
-    
-    // Set up stdout
-    fdev_setup_stream(&serial_stdout, serial_putchar, NULL, _FDEV_SETUP_WRITE);
-    stdout = &serial_stdout;
-}
 
 //-----------------------------------------------------------------------------
 // 

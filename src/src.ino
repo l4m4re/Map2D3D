@@ -114,7 +114,7 @@ void setup()
 
     
 /*
-    Table2D<8, int16_t, int8_t>  test;
+    Map2D<8, int16_t, int8_t>  test;
     test.setXs_P(xs);
     test.setYs_P(ys);
 
@@ -127,7 +127,7 @@ void setup()
     }
 
 
-    Table2D<8, int16_t, byte>  testb;
+    Map2D<8, int16_t, byte>  testb;
     testb.setXs_P(xs);
     testb.setYs_P(ysb);
 
@@ -143,7 +143,7 @@ void setup()
     
 
 
-    Table2D<8, int16_t, Fix16>  testFix16;
+    Map2D<8, int16_t, Fix16>  testFix16;
     testFix16.setXs_P(xs);
     
 #ifdef USEPROGMEM    
@@ -177,7 +177,7 @@ void setup()
 
 //  Test Fix16 from float and compare with testFix16
 
-    Table2D<8, int16_t, Fix16>  testFix16FromFloat;
+    Map2D<8, int16_t, Fix16>  testFix16FromFloat;
     testFix16FromFloat.setXs_P(xs);
 
 #ifdef USEPROGMEM

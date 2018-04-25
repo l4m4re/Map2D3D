@@ -78,7 +78,7 @@
 // Debug stuff
 //-----------------------------------------------------------------------------
 
-#define DEBUG            1
+//#define DEBUG            1
 
 #if DEBUG == 1
     #define dprint(expression) Serial.print(F("# ")); Serial.print( F(#expression) ); \
@@ -95,9 +95,13 @@
 //-----------------------------------------------------------------------------
 
 template<int S, typename X, typename Y> // S: size, X,Y: data types
-class Table2D
+class Map2D
 {
 public:
+                  Map2D()
+                  {
+                      for( int i=0; i<S; i++ ) { xs[i] = 0; ys[i] = 0; }
+                  }
 
     inline int    sizeX()               { return S; }
 
@@ -143,7 +147,7 @@ public:
                     if (x < xs[0])      { return ys[0];   } // minimum
                     if (x > xs[S-1])    { return ys[S-1]; } // maximum
 
-                    int i=0, j=S, k;
+                    int i=0, j=S-1, k;
 
                     // find i, such that xs[i] <= x < xs[j] using bisection
                     while ( j - i > 1) {                      
@@ -170,9 +174,15 @@ protected:
 //-----------------------------------------------------------------------------
 
 template<int R, int S, typename X, typename Y> // R,S: size, X,Y: data type
-class Table3D
+class Map3D
 {
 public:
+                  Map3D()
+                  {
+                      for( int i=0; i<R;   i++ ) { x1s[i] = 0; }
+                      for( int i=0; i<S;   i++ ) { x2s[i] = 0; }
+                      for( int i=0; i<R+S; i++ ) { ys[i]  = 0; }
+                  }                        
 
     inline int    sizeX1()                { return R; }
     inline int    sizeX2()                { return S; }
@@ -220,7 +230,7 @@ public:
                     if (x2 < x2s[0])      { x2 = x2s[0];   } // minimum
                     if (x2 > x2s[S-1])    { x2 = x2s[S-1]; } // maximum
 
-                    int i=0, j=R, m;
+                    int i=0, j=R-1, m;
 
                     // find i, such that x1s[i] <= x1 < x1s[j] using bisection
                     while ( j - i > 1) {                      
@@ -230,7 +240,7 @@ public:
                         else                j = m;
                     }
 
-                    int k=S; 
+                    int k=S-1; 
                     j=0;
                     
                     // find j, such that x2s[j] <= x2 < x2s[k] using bisection

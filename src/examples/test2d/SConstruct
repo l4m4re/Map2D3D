@@ -1,0 +1,1 @@
+Program('test2d_beagle.cpp', parse_flags = '-g -I../..', LIBS=['fixmath'])

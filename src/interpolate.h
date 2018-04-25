@@ -56,6 +56,8 @@
 //-----------------------------------------------------------------------------
 
 #include <stdint.h>
+#include <string.h>
+using namespace std;
 
 #ifdef SUPPORT_INTEGER_ARITMETHIC
 # include <fix16.hpp>

@@ -29,55 +29,83 @@ print
 
 ## TODO: check if the fix16_lerp routines may be faster.
 
+
+def getCast( from_tp, to_tp ):
+    head = ""
+    tail = ""
+
+    if from_tp == to_tp:
+      return head, tail
+
+    head = "static_cast<"+to_tp+">("
+    tail = ")"
+
+    if to_tp == "Fix16":
+        # uint16_t must be casted to float before it can be casted to Fix16
+        if from_tp == "uint16_t":
+          head += "static_cast<float>("
+          tail += ")"
+        elif from_tp == "uint8_t" or from_tp == "int8_t":
+          head += "static_cast<int16_t>("
+          tail += ")"
+
+    if from_tp == "Fix16":
+        # uint16_t must be casted to float before it can be casted to Fix16
+        if to_tp == "uint16_t":
+          head += "static_cast<float>("
+          tail += ")"
+        elif to_tp == "uint8_t" or to_tp == "int8_t":
+          head += "static_cast<int16_t>("
+          tail += ")"
+
+    return head, tail
+
+
+
 for X in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16"]:
   for Y in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16", "float", "double"]:
-    R = Y
-    if R in ["int8_t", "uint8_t"]:
-      R = "int16_t"
-    if R in ["uint16_t"]:
-      R = "int32_t"
-   
+
     if X == "Fix16" and Y == "Fix16":
-      break
+      break  # no casting exercise required, so no specialisation either.
 
-    C = Y 
-    if C in ["int8_t", "uint8_t", "int16_t", "uint16_t"]:
-      C = "Fix16"
-    
-    prcx  = "static_cast<" + C + ">("
-    pocx = ")"
-    prcy  = "static_cast<" + C + ">("
-    pocy = ")"
+    interpol_tp = Y
+    if interpol_tp in ["int8_t", "uint8_t", "int16_t", "uint16_t"]:
+      interpol_tp = "Fix16"
 
-    # uint16_t must be casted to float before it van be casted to Fix16
-    if X == "uint16_t" and C == "Fix16":
-      prcx += "static_cast<float>("
-# TODO: check whether or not casting to int32 works.
-#      prcx += "static_cast<int32_t>("
-      pocx = "))"
-    if Y == "uint16_t" and C == "Fix16":
-      prcy += "static_cast<float>("
-#      prcy += "static_cast<int32_t>("
-      pocy = "))"
 
     print"template<>"
-    print"inline "+ Y, "interpolate(", X, "x,", X,"x_1,", X, "x_2,"
+    print"inline " + Y, "interpolate(", X, "x,", X,"x_1,", X, "x_2,"
     print"                           ", Y, "y_1,", Y, "y_2 )"
     print"{"
-#   print'  Serial.print(\"X:', X ,'\"); Serial.println(\"Y:', Y, '\");'
-    print"  return static_cast<", R ,">("
+
+
+    rhead,rtail = getCast(interpol_tp, Y)
+
+    print"#ifdef DEBUG"
+    print"  " + interpol_tp + " retval = ("
+    print"#else"
+    print"  return " + rhead
+    print"#endif"
+
+
+    prcx,pocx = getCast(X,interpol_tp)
+    prcy,pocy = getCast(Y,interpol_tp)
+
     print"                  interpolate( " + prcx + "x"   + pocx + ","
     print"                               " + prcx + "x_1" + pocx + ","
     print"                               " + prcx + "x_2" + pocx + ","
     print"                               " + prcy + "y_1" + pocy + ","
-    print"                               " + prcy + "y_2" + pocy + " ));"
+    print"                               " + prcy + "y_2" + pocy + " )"
+    print
+
+    print"#ifndef DEBUG"
+    print"                             " + rtail +";"
+    print"#else"
+    print"  return " + rhead + "retval" + rtail +";"
+    print"#endif"
+
     print"}"
     print
     print
 
 print "#endif"
-    
-
-
-
-

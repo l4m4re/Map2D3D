@@ -71,67 +71,67 @@ void setup()
 
 
 
-    Table2D<8,int8_t,int8_t> test_int8_t_int8_t_8;
+    Map2D<8,int8_t,int8_t> test_int8_t_int8_t_8;
     test_int8_t_int8_t_8.setXs_P(xs_int8_t_8);
     test_int8_t_int8_t_8.setYs_P(ys_int8_t_8);
 
-    Table2D<8,int8_t,int16_t> test_int8_t_int16_t_8;
+    Map2D<8,int8_t,int16_t> test_int8_t_int16_t_8;
     test_int8_t_int16_t_8.setXs_P(xs_int8_t_8);
     test_int8_t_int16_t_8.setYs_P(ys_int16_t_8);
 
-    Table2D<8,int8_t,Fix16> test_int8_t_Fix16_8;
+    Map2D<8,int8_t,Fix16> test_int8_t_Fix16_8;
     test_int8_t_Fix16_8.setXs_P(xs_int8_t_8);
     test_int8_t_Fix16_8.setYsFromFloat_P(ys_float_8);
 
-    Table2D<8,int8_t,float> test_int8_t_float_8;
+    Map2D<8,int8_t,float> test_int8_t_float_8;
     test_int8_t_float_8.setXs_P(xs_int8_t_8);
     test_int8_t_float_8.setYsFromFloat_P(ys_float_8);
 
-    Table2D<8,int16_t,int8_t> test_int16_t_int8_t_8;
+    Map2D<8,int16_t,int8_t> test_int16_t_int8_t_8;
     test_int16_t_int8_t_8.setXs_P(xs_int16_t_8);
     test_int16_t_int8_t_8.setYs_P(ys_int8_t_8);
 
-    Table2D<8,int16_t,int16_t> test_int16_t_int16_t_8;
+    Map2D<8,int16_t,int16_t> test_int16_t_int16_t_8;
     test_int16_t_int16_t_8.setXs_P(xs_int16_t_8);
     test_int16_t_int16_t_8.setYs_P(ys_int16_t_8);
 
-    Table2D<8,int16_t,Fix16> test_int16_t_Fix16_8;
+    Map2D<8,int16_t,Fix16> test_int16_t_Fix16_8;
     test_int16_t_Fix16_8.setXs_P(xs_int16_t_8);
     test_int16_t_Fix16_8.setYsFromFloat_P(ys_float_8);
 
-    Table2D<8,int16_t,float> test_int16_t_float_8;
+    Map2D<8,int16_t,float> test_int16_t_float_8;
     test_int16_t_float_8.setXs_P(xs_int16_t_8);
     test_int16_t_float_8.setYsFromFloat_P(ys_float_8);
 
-    Table2D<8,Fix16,int8_t> test_Fix16_int8_t_8;
+    Map2D<8,Fix16,int8_t> test_Fix16_int8_t_8;
     test_Fix16_int8_t_8.setXsFromFloat_P(xs_float_8);
     test_Fix16_int8_t_8.setYs_P(ys_int8_t_8);
 
-    Table2D<8,Fix16,int16_t> test_Fix16_int16_t_8;
+    Map2D<8,Fix16,int16_t> test_Fix16_int16_t_8;
     test_Fix16_int16_t_8.setXsFromFloat_P(xs_float_8);
     test_Fix16_int16_t_8.setYs_P(ys_int16_t_8);
 
-    Table2D<8,Fix16,Fix16> test_Fix16_Fix16_8;
+    Map2D<8,Fix16,Fix16> test_Fix16_Fix16_8;
     test_Fix16_Fix16_8.setXsFromFloat_P(xs_float_8);
     test_Fix16_Fix16_8.setYsFromFloat_P(ys_float_8);
 
-    Table2D<8,Fix16,float> test_Fix16_float_8;
+    Map2D<8,Fix16,float> test_Fix16_float_8;
     test_Fix16_float_8.setXsFromFloat_P(xs_float_8);
     test_Fix16_float_8.setYsFromFloat_P(ys_float_8);
 
-    Table2D<8,float,int8_t> test_float_int8_t_8;
+    Map2D<8,float,int8_t> test_float_int8_t_8;
     test_float_int8_t_8.setXsFromFloat_P(xs_float_8);
     test_float_int8_t_8.setYs_P(ys_int8_t_8);
 
-    Table2D<8,float,int16_t> test_float_int16_t_8;
+    Map2D<8,float,int16_t> test_float_int16_t_8;
     test_float_int16_t_8.setXsFromFloat_P(xs_float_8);
     test_float_int16_t_8.setYs_P(ys_int16_t_8);
 
-    Table2D<8,float,Fix16> test_float_Fix16_8;
+    Map2D<8,float,Fix16> test_float_Fix16_8;
     test_float_Fix16_8.setXsFromFloat_P(xs_float_8);
     test_float_Fix16_8.setYsFromFloat_P(ys_float_8);
 
-    Table2D<8,float,float> test_float_float_8;
+    Map2D<8,float,float> test_float_float_8;
     test_float_float_8.setXsFromFloat_P(xs_float_8);
     test_float_float_8.setYsFromFloat_P(ys_float_8);
 
