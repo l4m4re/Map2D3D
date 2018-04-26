@@ -62,7 +62,7 @@ def getCast( from_tp, to_tp ):
 
 
 
-for X in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16"]:
+for X in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16" ]:
   for Y in ["int8_t", "uint8_t", "int16_t", "uint16_t", "Fix16", "float", "double"]:
 
     if X == "Fix16" and Y == "Fix16":

@@ -5,8 +5,9 @@
 sizes = [8]
 
 memarraytypes = ["int8_t", "int16_t", "float"]
-#XYtypes       = ["int8_t", "int16_t", "Fix16", "float" ]
-XYtypes       = ["int8_t", "int16_t", "Fix16" ]
+Xtypes        = ["int8_t", "int16_t", "Fix16" ]
+Ytypes        = ["int8_t", "int16_t", "Fix16", "float" ]
+#XYtypes       = ["int8_t", "int16_t", "Fix16" ]
 
 
 
@@ -46,7 +47,7 @@ using namespace std;
 // Stuff needed for printing
 FILE                    serial_stdout;
 static char             outstr[15];
-#define mPrintFloat(f)  dtostrf(f, 8, 2, outstr); Serial.print(outstr);
+#define mPrintFloat(f)  dtostrf(f, 9, 2, outstr); Serial.print(outstr);
 
 """
 
@@ -67,7 +68,7 @@ void setup()
     Serial.println( F("------------------------------") );
     Serial.println( F("      2D Maps test") );
     Serial.println( F("------------------------------") );
-    Serial.println( F("Unsigned: only char/byte type.") );
+    Serial.println( F(" Signed: int and float types.") );
     Serial.println( F("------------------------------") );
 
 """
@@ -177,8 +178,8 @@ testub.setXs_P(xs);
 testub.setYs_P(ysb);
 '''
 
-for X in XYtypes:
-  for Y in XYtypes:
+for X in Xtypes:
+  for Y in Ytypes:
     for size in sizes:
       table = "Map2D<" + str(size) + "," + X + "," + Y + ">"
 
@@ -192,16 +193,16 @@ for X in XYtypes:
       print "    " + varname + "." + ysetter + "_P(" + yname + ");"
 
 print '''
-  for( int idx=-1280; idx<1270; idx+=50)
+  for( int idx=-1280; idx<=1270; idx+=10)
   {
 '''
 
-printfstr  = "%4d:"
+printfstr  = "%5d:"
 printfargs = "idx"
 mprints    = []
     
-for Y in XYtypes:
-  for X in XYtypes:
+for Y in Ytypes:
+  for X in Xtypes:
     for size in sizes:
 
       varname = "test_" + X + "_" + Y + "_" + str(size)
@@ -209,10 +210,12 @@ for Y in XYtypes:
       yname, yidx, ysetter = get_arr_nm_idx_setter(  Y, "ys", size )
     
       tempvartp = Y
-      fidx = ".f(idx/10);"
       if tempvartp in ["Fix16", "float"]: 
         tempvartp = "float"
-        fidx = ".f(idx);"
+
+      fidx = ".f(idx);"
+      if "8" in X:
+        fidx = ".f(idx/10);"
 
       tempvarnm = "val_" + X + "_" + Y + "_" + str(size)
 
