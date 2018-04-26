@@ -29,7 +29,7 @@
 
 using namespace std;
 
-#define BAUDRATE    115200
+#define BAUDRATE    9600
 
 // Stuff needed for printing
 FILE                    serial_stdout;

@@ -1,5 +1,15 @@
 #!/usr/bin/python
 
+
+#sizes = [8,16]
+sizes = [8]
+
+memarraytypes = ["int8_t", "int16_t", "float"]
+#XYtypes       = ["int8_t", "int16_t", "Fix16", "float" ]
+XYtypes       = ["int8_t", "int16_t", "Fix16" ]
+
+
+
 header="""//-----------------------------------------------------------------------------
 // Test 2D maps
 //-----------------------------------------------------------------------------
@@ -96,7 +106,7 @@ def get_arr_nm_idx_setter( dtype, axis, sz ):
 
 
 def mk_mem_array( arr, axis, sz ):
-  for dtype in ["int8_t", "int16_t", "float"]:
+  for dtype in memarraytypes:
 
     name, idx, setter = get_arr_nm_idx_setter( dtype, axis, sz )  
 
@@ -133,7 +143,7 @@ def mk_mem_array( arr, axis, sz ):
 
 
 def print_decl( arr, axis, sz ):
-  for dtype in ["int8_t", "int16_t", "float"]:
+  for dtype in memarraytypes:
 
     name, idx, setter = get_arr_nm_idx_setter( dtype, axis, sz )  
 
@@ -147,36 +157,30 @@ def print_decl( arr, axis, sz ):
     print decl
     print arr[idx]
 
-
-mk_mem_array(xs, "xs",  8)  
-print_decl(xs, "xs", 8)  
-mk_mem_array(ys, "ys",  8)  
-print_decl(ys, "ys", 8)  
-
-#mk_mem_array(xs, "xs", 16)  
-#print_decl(xs, "xs", 16)  
-#mk_mem_array(ys, "ys", 16)  
-#print_decl(ys, "ys", 16)  
+for size in sizes:
+  mk_mem_array(xs, "xs",  size)  
+  print_decl(xs, "xs", size)  
+  mk_mem_array(ys, "ys",  size)  
+  print_decl(ys, "ys", size)  
 
 print functions
 
 types = ["int8_t", "int16_t", "Fix16", "float" ]
 
 '''    
-Table2D<8, int16_t, byte>  testb;
+Map2D<8, int16_t, byte>  testb;
 testb.setXs_P(xs);
 testb.setYs_P(ysb);
 
-Table2D<8, uint16_t, byte>  testub;
+Map2D<8, uint16_t, byte>  testub;
 testub.setXs_P(xs);
 testub.setYs_P(ysb);
 '''
 
-for X in types:
-  for Y in types:
-    #for size in [8,16]:
-      size = 8
-      table = "Table2D<" + str(size) + "," + X + "," + Y + ">"
+for X in XYtypes:
+  for Y in XYtypes:
+    for size in sizes:
+      table = "Map2D<" + str(size) + "," + X + "," + Y + ">"
 
       varname = "test_" + X + "_" + Y + "_" + str(size)
       xname, xidx, xsetter = get_arr_nm_idx_setter(  X, "xs", size )
@@ -196,10 +200,9 @@ printfstr  = "%4d:"
 printfargs = "idx"
 mprints    = []
     
-for Y in types:
-  for X in types:
-    #for size in [8,16]:
-      size = 8
+for Y in XYtypes:
+  for X in XYtypes:
+    for size in sizes:
 
       varname = "test_" + X + "_" + Y + "_" + str(size)
       xname, xidx, xsetter = get_arr_nm_idx_setter(  X, "xs", size )
