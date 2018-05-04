@@ -72,7 +72,14 @@
 //-----------------------------------------------------------------------------
 
 #include <stdint.h>
+#include <Print.h>
 #include "interpolate.h"
+#include "toString.h"
+
+#ifdef AVR
+#include <avr/eeprom.h>
+#endif
+
 
 //-----------------------------------------------------------------------------
 // Debug stuff
@@ -81,9 +88,9 @@
 //#define DEBUG            1
 
 #if DEBUG == 1
-    #define dprint(expression) Serial.print(F("# ")); Serial.print( F(#expression) ); \
-                               Serial.print( F(": ") ); Serial.println( expression )
-    #define dshow(expression) Serial.println( expression )
+    #define dprint(expression) p.print(F("# ")); p.print( F(#expression) ); \
+                               p.print( F(": ") ); p.println( expression )
+    #define dshow(expression) p.println( expression )
 #else
     #define dprint(expression) 
     #define dshow(expression)
@@ -91,11 +98,35 @@
 
 
 //-----------------------------------------------------------------------------
+// Abstract base class
+//-----------------------------------------------------------------------------
+
+class Map
+{
+  public:
+    virtual int     memSize() const                                 =0;
+
+#ifdef AVR
+
+    virtual bool    updateEeprom(uint8_t* dest) const               =0;
+    virtual bool    readEeprom(const uint8_t* src)                  =0;
+
+#endif
+
+    virtual void    printTo( Print& p, const uint8_t tabsize = 4,
+                             const char delim = ' ')                =0;
+
+//  virtual void    printBinaryTo( Print& p)
+};
+
+
+
+//-----------------------------------------------------------------------------
 // 2D lookup table / fuel map. X axis (xs) must be sorted in ascending order.
 //-----------------------------------------------------------------------------
 
 template<int S, typename X, typename Y> // S: size, X,Y: data types
-class Map2D
+class Map2D : public Map
 {
 public:
                   Map2D()
@@ -103,34 +134,67 @@ public:
                       for( int i=0; i<S; i++ ) { xs[i] = 0; ys[i] = 0; }
                   }
 
-    inline int    sizeX()               { return S; }
+    int           xSize()   const  { return S; }
+    int           ySize()   const  { return S; }
+    int           memSize() const  { return S*(sizeof(X)+sizeof(Y));}
 
     void          setXs( const X* xss ) 
                         { memcpy( xs, xss, S*sizeof(X) ); }
 
-    void          setXsFromFloat( const float* xss ) 
+    void          setXsFromFloat( const float* xss )
                   {
-                      for( int i=0; i<S; i++ ) { xs[i] = static_cast<X>(xss[i]); }
+                      for( int i=0; i<S; i++ )  { xs[i] = static_cast<X>(xss[i]); }
                   }                        
+
+    int           getXInt( int i )              { return 0<=i<S ? static_cast<int>(xs[i])   : 0; }
+
+    float         getXFloat( int i )            { return 0<=i<S ? static_cast<float>(xs[i]) : 0; }
 
     void          setYs( const Y* yss )
                         { memcpy( ys, yss, S*sizeof(Y) ); }
 
-    void          setYsFromFloat( const float* yss ) 
+    void          setYsFromFloat( const float* yss )
                   {
                       for( int i=0; i<S; i++ ) { ys[i] = static_cast<Y>(yss[i]); }
                   }
+
+    int           getYInt( int i )              { return 0<=i<S ? static_cast<int>(ys[i])   : 0; }
+
+    float         getYFloat( int i )            { return 0<=i<S ? static_cast<float>(ys[i]) : 0; }
+
+#ifdef AVR
+
+    virtual bool  updateEeprom(uint8_t* dest) const
+                  {
+                    if( !eeprom_is_ready() ) return false;
+
+                    eeprom_update_block( xs, dest, sizeof(xs) );
+                    eeprom_update_block( ys, dest+sizeof(xs), sizeof(ys) );
+
+                    return true;
+                  }
+
+    virtual bool  readEeprom(const uint8_t* src)
+                  {
+                    if( !eeprom_is_ready() ) return false;
+
+                    eeprom_read_block( xs, src, sizeof(xs) );
+                    eeprom_read_block( ys, src+sizeof(xs), sizeof(ys) );
+
+                    return true;
+                  }
+#endif
 
 #ifdef ARDUINO    // Initialization from array in PROGMEM
 
     void          setXs_P( const X* xss ) 
                         { memcpy_P( xs, xss, S*sizeof(X) ); }
 
-    void          setXsFromFloat_P( const float* xss ) 
+    void          setXsFromFloat_P( const float* xss )
                   {
                       for( int i=0; i<S; i++ ) { 
                         xs[i] = static_cast<X>(pgm_read_float_near(xss+i)); }
-                  }  
+                  }
 
     void          setYs_P( const Y* yss )
                         { memcpy_P( ys, yss, S*sizeof(Y) ); }
@@ -141,6 +205,35 @@ public:
                           { ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
                   }
 #endif
+
+    void          printTo( Print& p, const uint8_t tabsize = 4, const char delim = ' ')
+                  {
+                        const char spaceChar=' ';
+                        
+//                      p.println( table title ); // TODO
+
+                        p.println();
+
+                        for (int x = 0; x < xSize(); x++)
+                        {
+                          const char* _x = toString(xs[x]);
+
+                          for( uint16_t idx=0; idx<tabsize-strlen(_x); idx++)     p.write(spaceChar);
+
+                          p.print(_x);// Vertical Bins
+                          p.write(delim);
+
+                          const char* value = toString(ys[x]);
+                          for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
+
+                          p.print(value);
+
+                          p.println();
+                        }
+
+                        p.println();
+                  }
+
 
     Y             f( X x )              // approximate f(x)
                   {    
@@ -174,7 +267,7 @@ protected:
 //-----------------------------------------------------------------------------
 
 template<int R, int S, typename X, typename Y> // R,S: size, X,Y: data type
-class Map3D
+class Map3D : public Map
 {
 public:
                   Map3D()
@@ -184,8 +277,10 @@ public:
                       for( int i=0; i<R+S; i++ ) { ys[i]  = 0; }
                   }                        
 
-    inline int    sizeX1()                { return R; }
-    inline int    sizeX2()                { return S; }
+    int           x1Size()  const    { return R;   }
+    int           x2Size()  const    { return S;   }
+    int           ySize()   const    { return R*S; }
+    int           memSize() const    { return (R+S)*sizeof(X) + (R*S)*sizeof(Y);}
 
 
     void          setX1s( const X* x1ss ) 
@@ -193,6 +288,22 @@ public:
 
     void          setX2s( const X* x2ss ) 
                         { memcpy( x2s, x2ss, S*sizeof(X) ); }
+
+    void          setX1sFromFloat( const float* xss )
+                  {
+                      for( int i=0; i<R; i++ )  { x1s[i] = static_cast<X>(xss[i]); }
+                  }
+
+    void          setX2sFromFloat( const float* xss )
+                  {
+                      for( int i=0; i<S; i++ )  { x2s[i] = static_cast<X>(xss[i]); }
+                  }
+
+    int           getX1Int( int i )              { return 0<=i<R ? static_cast<int>(x1s[i])   : 0; }
+    int           getX2Int( int i )              { return 0<=i<S ? static_cast<int>(x2s[i])   : 0; }
+
+    float         getX1Float( int i )            { return 0<=i<R ? static_cast<float>(x1s[i]) : 0; }
+    float         getX2Float( int i )            { return 0<=i<S ? static_cast<float>(x2s[i]) : 0; }
 
     void          setYs( const Y* yss )
                         { memcpy( ys, yss, R*S*sizeof(Y) ); }
@@ -204,6 +315,37 @@ public:
                         { ys[i] = static_cast<Y>(yss[i]); }
                   }
 
+    int           getYInt( int i, int j )
+                      { return 0<=i<R && 0<=j<S ? static_cast<int>(ys[i][j]) : 0; }
+
+    float         getYFloat( int i, int j )
+                      { return 0<=i<R && 0<=j<S ? static_cast<float>(ys[i][j]) : 0; }
+
+#ifdef AVR
+
+    virtual bool  updateEeprom(uint8_t* dest) const
+                  {
+                    if( !eeprom_is_ready() ) return false;
+
+                    eeprom_update_block( x1s, dest, sizeof(x1s) );
+                    eeprom_update_block( x2s, dest+sizeof(x1s), sizeof(x2s) );
+                    eeprom_update_block( ys,  dest+sizeof(x1s)+sizeof(x2s), sizeof(ys) );
+
+                    return true;
+                  }
+
+    virtual bool  readEeprom(const uint8_t* src)
+                  {
+                    if( !eeprom_is_ready() ) return false;
+
+                    eeprom_read_block( x1s, src, sizeof(x1s) );
+                    eeprom_read_block( x2s, src+sizeof(x1s), sizeof(x2s) );
+                    eeprom_read_block( ys,  src+sizeof(x1s)+sizeof(x2s), sizeof(ys) );
+
+                    return true;
+                  }
+#endif
+
 #ifdef ARDUINO    // Initialize from array in PROGMEM
 
     void          setX1s_P( const X* x1ss ) 
@@ -211,6 +353,18 @@ public:
 
     void          setX2s_P( const X* x2ss ) 
                         { memcpy_P( x2s, x2ss, S*sizeof(X) ); }
+
+    void          setX1sFromFloat_P( const float* xss )
+                  {
+                      for( int i=0; i<R; i++ )
+                        { x1s[i] = static_cast<X>(pgm_read_float_near(xss+i)); }
+                  }
+
+    void          setX2sFromFloat_P( const float* xss )
+                  {
+                      for( int i=0; i<S; i++ )
+                        { x2s[i] = static_cast<X>(pgm_read_float_near(xss+i)); }
+                  }
 
     void          setYs_P( const Y* yss )
                         { memcpy_P( ys, yss, R*S*sizeof(Y) ); }
@@ -221,7 +375,49 @@ public:
                           { ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
                   }
 
+
 #endif
+
+    void          printTo( Print& p, const uint8_t tabsize = 4, const char delim = ' ')
+                  {
+                        const char spaceChar=' ';
+                        
+//                      p.println( table title ); // TODO
+
+                        p.println();
+                        for (int y = 0; y < x2Size(); y++)
+                        {
+                          const char* _x2 = toString(x2s[y]);
+
+                          for( uint16_t idx=0; idx<tabsize-strlen(_x2); idx++)  p.write(spaceChar);
+
+                          p.print(_x2);// Vertical Bins
+                          p.write(delim);
+
+                          for (int i = 0; i < x1Size(); i++)
+                          {
+                            const char* value = toString(ys[y][i]);
+                            for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
+
+                            p.print(value);
+                            p.write(delim);
+                          }
+                          p.println();
+                        }
+
+                        for( uint16_t idx=0; idx<tabsize; idx++)                p.write(spaceChar);
+
+                        for (int x = 0; x < x1Size(); x++)// Horizontal bins
+                        {
+                          const char* _x1 = toString(x1s[x]); //  / 100; for TS
+                          for( uint16_t idx=0; idx<tabsize-strlen(_x1); idx++)  p.write(spaceChar);
+
+                          p.print(_x1);
+                          p.write(delim);
+                        }
+                        p.println();
+                  }
+
 
     Y             f( X x1, X x2 )
                   {    

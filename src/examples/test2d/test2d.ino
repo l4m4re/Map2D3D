@@ -103,6 +103,8 @@ void setup()
     Map2D<8, int16_t, int8_t>  testInt8;
     testInt8.setXs_P(xs);
     testInt8.setYs_P(ys8);
+    testInt8.updateEeprom(0);
+    testInt8.readEeprom(0);
 
     Map2D<8, int16_t, Fix16>  testFix16;
     testFix16.setXs_P(xs);
@@ -141,7 +143,7 @@ void setup()
     Serial.println( F("------------------------------------------") );
 
 #define sprint(expression) Serial.print(F("Size of ")); Serial.print( F(#expression) );  \
-            Serial.print( F("\t with size: ") ); Serial.print( expression.sizeX() ); \
+            Serial.print( F("\t with size: ") ); Serial.print( expression.xSize() ); \
             Serial.print( F(": ") ); Serial.println( sizeof(expression) )
 
    sprint( testInt8 );
