@@ -2,17 +2,18 @@
 //
 // Copyright (C) 2018 Arend Lammertink
 //
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by the Free
-// Software Foundation, version 3.
+// This library is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, version 3.
 //
-// This program is distributed in the hope that it will be useful, but WITHOUT
+// This library is distributed in the hope that it will be useful, but WITHOUT
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-// more details.
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+// for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// along with this library. If not, see <http://www.gnu.org/licenses/>.
+//
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -23,299 +24,464 @@
 #ifndef _interpol2d_spec_h
 #define _interpol2d_spec_h
 
+template<>
 inline int8_t interpolate( int8_t x1, int8_t x2,
                             int8_t x_1, int8_t x_2, int8_t x_3, int8_t x_4,
                             int8_t y_1, int8_t y_2, int8_t y_3, int8_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline uint8_t interpolate( int8_t x1, int8_t x2,
                             int8_t x_1, int8_t x_2, int8_t x_3, int8_t x_4,
                             uint8_t y_1, uint8_t y_2, uint8_t y_3, uint8_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline int16_t interpolate( int8_t x1, int8_t x2,
                             int8_t x_1, int8_t x_2, int8_t x_3, int8_t x_4,
                             int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int16_t>(
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
                                static_cast<Fix16>(y_1),
                                static_cast<Fix16>(y_2),
                                static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(y_4) )
+#ifndef DEBUG
+                             );
+#else
+  return static_cast<int16_t>(retval);
+#endif
 }
 
 
+template<>
 inline uint16_t interpolate( int8_t x1, int8_t x2,
                             int8_t x_1, int8_t x_2, int8_t x_3, int8_t x_4,
                             uint16_t y_1, uint16_t y_2, uint16_t y_3, uint16_t y_4 )
 {
-  return static_cast< int32_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint16_t>(static_cast<float>(
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
                                static_cast<Fix16>(static_cast<float>(y_1)),
                                static_cast<Fix16>(static_cast<float>(y_2)),
                                static_cast<Fix16>(static_cast<float>(y_3)),
-                               static_cast<Fix16>(static_cast<float>(y_4)) ));
+                               static_cast<Fix16>(static_cast<float>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint16_t>(static_cast<float>(retval));
+#endif
 }
 
 
+template<>
 inline Fix16 interpolate( int8_t x1, int8_t x2,
                             int8_t x_1, int8_t x_2, int8_t x_3, int8_t x_4,
                             Fix16 y_1, Fix16 y_2, Fix16 y_3, Fix16 y_4 )
 {
-  return static_cast< Fix16 >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return 
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline float interpolate( int8_t x1, int8_t x2,
                             int8_t x_1, int8_t x_2, int8_t x_3, int8_t x_4,
                             float y_1, float y_2, float y_3, float y_4 )
 {
-  return static_cast< float >(
+#ifdef DEBUG
+  float retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<float>(x1),
                                static_cast<float>(x2),
                                static_cast<float>(x_1),
                                static_cast<float>(x_2),
                                static_cast<float>(x_3),
                                static_cast<float>(x_4),
-                               static_cast<float>(y_1),
-                               static_cast<float>(y_2),
-                               static_cast<float>(y_3),
-                               static_cast<float>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline double interpolate( int8_t x1, int8_t x2,
                             int8_t x_1, int8_t x_2, int8_t x_3, int8_t x_4,
                             double y_1, double y_2, double y_3, double y_4 )
 {
-  return static_cast< double >(
+#ifdef DEBUG
+  double retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<double>(x1),
                                static_cast<double>(x2),
                                static_cast<double>(x_1),
                                static_cast<double>(x_2),
                                static_cast<double>(x_3),
                                static_cast<double>(x_4),
-                               static_cast<double>(y_1),
-                               static_cast<double>(y_2),
-                               static_cast<double>(y_3),
-                               static_cast<double>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline int8_t interpolate( uint8_t x1, uint8_t x2,
                             uint8_t x_1, uint8_t x_2, uint8_t x_3, uint8_t x_4,
                             int8_t y_1, int8_t y_2, int8_t y_3, int8_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline uint8_t interpolate( uint8_t x1, uint8_t x2,
                             uint8_t x_1, uint8_t x_2, uint8_t x_3, uint8_t x_4,
                             uint8_t y_1, uint8_t y_2, uint8_t y_3, uint8_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline int16_t interpolate( uint8_t x1, uint8_t x2,
                             uint8_t x_1, uint8_t x_2, uint8_t x_3, uint8_t x_4,
                             int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int16_t>(
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
                                static_cast<Fix16>(y_1),
                                static_cast<Fix16>(y_2),
                                static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(y_4) )
+#ifndef DEBUG
+                             );
+#else
+  return static_cast<int16_t>(retval);
+#endif
 }
 
 
+template<>
 inline uint16_t interpolate( uint8_t x1, uint8_t x2,
                             uint8_t x_1, uint8_t x_2, uint8_t x_3, uint8_t x_4,
                             uint16_t y_1, uint16_t y_2, uint16_t y_3, uint16_t y_4 )
 {
-  return static_cast< int32_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint16_t>(static_cast<float>(
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
                                static_cast<Fix16>(static_cast<float>(y_1)),
                                static_cast<Fix16>(static_cast<float>(y_2)),
                                static_cast<Fix16>(static_cast<float>(y_3)),
-                               static_cast<Fix16>(static_cast<float>(y_4)) ));
+                               static_cast<Fix16>(static_cast<float>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint16_t>(static_cast<float>(retval));
+#endif
 }
 
 
+template<>
 inline Fix16 interpolate( uint8_t x1, uint8_t x2,
                             uint8_t x_1, uint8_t x_2, uint8_t x_3, uint8_t x_4,
                             Fix16 y_1, Fix16 y_2, Fix16 y_3, Fix16 y_4 )
 {
-  return static_cast< Fix16 >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return 
+#endif
+                  interpolate( static_cast<Fix16>(static_cast<int16_t>(x1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(x_4)),
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline float interpolate( uint8_t x1, uint8_t x2,
                             uint8_t x_1, uint8_t x_2, uint8_t x_3, uint8_t x_4,
                             float y_1, float y_2, float y_3, float y_4 )
 {
-  return static_cast< float >(
+#ifdef DEBUG
+  float retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<float>(x1),
                                static_cast<float>(x2),
                                static_cast<float>(x_1),
                                static_cast<float>(x_2),
                                static_cast<float>(x_3),
                                static_cast<float>(x_4),
-                               static_cast<float>(y_1),
-                               static_cast<float>(y_2),
-                               static_cast<float>(y_3),
-                               static_cast<float>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline double interpolate( uint8_t x1, uint8_t x2,
                             uint8_t x_1, uint8_t x_2, uint8_t x_3, uint8_t x_4,
                             double y_1, double y_2, double y_3, double y_4 )
 {
-  return static_cast< double >(
+#ifdef DEBUG
+  double retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<double>(x1),
                                static_cast<double>(x2),
                                static_cast<double>(x_1),
                                static_cast<double>(x_2),
                                static_cast<double>(x_3),
                                static_cast<double>(x_4),
-                               static_cast<double>(y_1),
-                               static_cast<double>(y_2),
-                               static_cast<double>(y_3),
-                               static_cast<double>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline int8_t interpolate( int16_t x1, int16_t x2,
                             int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
                             int8_t y_1, int8_t y_2, int8_t y_3, int8_t y_4 )
 {
-  return static_cast< int16_t >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(
+#endif
                   interpolate( static_cast<Fix16>(x1),
                                static_cast<Fix16>(x2),
                                static_cast<Fix16>(x_1),
                                static_cast<Fix16>(x_2),
                                static_cast<Fix16>(x_3),
                                static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline uint8_t interpolate( int16_t x1, int16_t x2,
                             int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
                             uint8_t y_1, uint8_t y_2, uint8_t y_3, uint8_t y_4 )
 {
-  return static_cast< int16_t >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(
+#endif
                   interpolate( static_cast<Fix16>(x1),
                                static_cast<Fix16>(x2),
                                static_cast<Fix16>(x_1),
                                static_cast<Fix16>(x_2),
                                static_cast<Fix16>(x_3),
                                static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline int16_t interpolate( int16_t x1, int16_t x2,
                             int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
                             int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
 {
-  return static_cast< int16_t >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int16_t>(
+#endif
                   interpolate( static_cast<Fix16>(x1),
                                static_cast<Fix16>(x2),
                                static_cast<Fix16>(x_1),
@@ -325,15 +491,25 @@ inline int16_t interpolate( int16_t x1, int16_t x2,
                                static_cast<Fix16>(y_1),
                                static_cast<Fix16>(y_2),
                                static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(y_4) )
+#ifndef DEBUG
+                             );
+#else
+  return static_cast<int16_t>(retval);
+#endif
 }
 
 
+template<>
 inline uint16_t interpolate( int16_t x1, int16_t x2,
                             int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
                             uint16_t y_1, uint16_t y_2, uint16_t y_3, uint16_t y_4 )
 {
-  return static_cast< int32_t >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint16_t>(static_cast<float>(
+#endif
                   interpolate( static_cast<Fix16>(x1),
                                static_cast<Fix16>(x2),
                                static_cast<Fix16>(x_1),
@@ -343,105 +519,165 @@ inline uint16_t interpolate( int16_t x1, int16_t x2,
                                static_cast<Fix16>(static_cast<float>(y_1)),
                                static_cast<Fix16>(static_cast<float>(y_2)),
                                static_cast<Fix16>(static_cast<float>(y_3)),
-                               static_cast<Fix16>(static_cast<float>(y_4)) ));
+                               static_cast<Fix16>(static_cast<float>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint16_t>(static_cast<float>(retval));
+#endif
 }
 
 
+template<>
 inline Fix16 interpolate( int16_t x1, int16_t x2,
                             int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
                             Fix16 y_1, Fix16 y_2, Fix16 y_3, Fix16 y_4 )
 {
-  return static_cast< Fix16 >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<Fix16>(x1),
                                static_cast<Fix16>(x2),
                                static_cast<Fix16>(x_1),
                                static_cast<Fix16>(x_2),
                                static_cast<Fix16>(x_3),
                                static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline float interpolate( int16_t x1, int16_t x2,
                             int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
                             float y_1, float y_2, float y_3, float y_4 )
 {
-  return static_cast< float >(
+#ifdef DEBUG
+  float retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<float>(x1),
                                static_cast<float>(x2),
                                static_cast<float>(x_1),
                                static_cast<float>(x_2),
                                static_cast<float>(x_3),
                                static_cast<float>(x_4),
-                               static_cast<float>(y_1),
-                               static_cast<float>(y_2),
-                               static_cast<float>(y_3),
-                               static_cast<float>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline double interpolate( int16_t x1, int16_t x2,
                             int16_t x_1, int16_t x_2, int16_t x_3, int16_t x_4,
                             double y_1, double y_2, double y_3, double y_4 )
 {
-  return static_cast< double >(
+#ifdef DEBUG
+  double retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<double>(x1),
                                static_cast<double>(x2),
                                static_cast<double>(x_1),
                                static_cast<double>(x_2),
                                static_cast<double>(x_3),
                                static_cast<double>(x_4),
-                               static_cast<double>(y_1),
-                               static_cast<double>(y_2),
-                               static_cast<double>(y_3),
-                               static_cast<double>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline int8_t interpolate( uint16_t x1, uint16_t x2,
                             uint16_t x_1, uint16_t x_2, uint16_t x_3, uint16_t x_4,
                             int8_t y_1, int8_t y_2, int8_t y_3, int8_t y_4 )
 {
-  return static_cast< int16_t >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(
+#endif
                   interpolate( static_cast<Fix16>(static_cast<float>(x1)),
                                static_cast<Fix16>(static_cast<float>(x2)),
                                static_cast<Fix16>(static_cast<float>(x_1)),
                                static_cast<Fix16>(static_cast<float>(x_2)),
                                static_cast<Fix16>(static_cast<float>(x_3)),
                                static_cast<Fix16>(static_cast<float>(x_4)),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline uint8_t interpolate( uint16_t x1, uint16_t x2,
                             uint16_t x_1, uint16_t x_2, uint16_t x_3, uint16_t x_4,
                             uint8_t y_1, uint8_t y_2, uint8_t y_3, uint8_t y_4 )
 {
-  return static_cast< int16_t >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(
+#endif
                   interpolate( static_cast<Fix16>(static_cast<float>(x1)),
                                static_cast<Fix16>(static_cast<float>(x2)),
                                static_cast<Fix16>(static_cast<float>(x_1)),
                                static_cast<Fix16>(static_cast<float>(x_2)),
                                static_cast<Fix16>(static_cast<float>(x_3)),
                                static_cast<Fix16>(static_cast<float>(x_4)),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline int16_t interpolate( uint16_t x1, uint16_t x2,
                             uint16_t x_1, uint16_t x_2, uint16_t x_3, uint16_t x_4,
                             int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
 {
-  return static_cast< int16_t >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int16_t>(
+#endif
                   interpolate( static_cast<Fix16>(static_cast<float>(x1)),
                                static_cast<Fix16>(static_cast<float>(x2)),
                                static_cast<Fix16>(static_cast<float>(x_1)),
@@ -451,15 +687,25 @@ inline int16_t interpolate( uint16_t x1, uint16_t x2,
                                static_cast<Fix16>(y_1),
                                static_cast<Fix16>(y_2),
                                static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(y_4) )
+#ifndef DEBUG
+                             );
+#else
+  return static_cast<int16_t>(retval);
+#endif
 }
 
 
+template<>
 inline uint16_t interpolate( uint16_t x1, uint16_t x2,
                             uint16_t x_1, uint16_t x_2, uint16_t x_3, uint16_t x_4,
                             uint16_t y_1, uint16_t y_2, uint16_t y_3, uint16_t y_4 )
 {
-  return static_cast< int32_t >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint16_t>(static_cast<float>(
+#endif
                   interpolate( static_cast<Fix16>(static_cast<float>(x1)),
                                static_cast<Fix16>(static_cast<float>(x2)),
                                static_cast<Fix16>(static_cast<float>(x_1)),
@@ -469,133 +715,208 @@ inline uint16_t interpolate( uint16_t x1, uint16_t x2,
                                static_cast<Fix16>(static_cast<float>(y_1)),
                                static_cast<Fix16>(static_cast<float>(y_2)),
                                static_cast<Fix16>(static_cast<float>(y_3)),
-                               static_cast<Fix16>(static_cast<float>(y_4)) ));
+                               static_cast<Fix16>(static_cast<float>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint16_t>(static_cast<float>(retval));
+#endif
 }
 
 
+template<>
 inline Fix16 interpolate( uint16_t x1, uint16_t x2,
                             uint16_t x_1, uint16_t x_2, uint16_t x_3, uint16_t x_4,
                             Fix16 y_1, Fix16 y_2, Fix16 y_3, Fix16 y_4 )
 {
-  return static_cast< Fix16 >(
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<Fix16>(static_cast<float>(x1)),
                                static_cast<Fix16>(static_cast<float>(x2)),
                                static_cast<Fix16>(static_cast<float>(x_1)),
                                static_cast<Fix16>(static_cast<float>(x_2)),
                                static_cast<Fix16>(static_cast<float>(x_3)),
                                static_cast<Fix16>(static_cast<float>(x_4)),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline float interpolate( uint16_t x1, uint16_t x2,
                             uint16_t x_1, uint16_t x_2, uint16_t x_3, uint16_t x_4,
                             float y_1, float y_2, float y_3, float y_4 )
 {
-  return static_cast< float >(
+#ifdef DEBUG
+  float retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<float>(x1),
                                static_cast<float>(x2),
                                static_cast<float>(x_1),
                                static_cast<float>(x_2),
                                static_cast<float>(x_3),
                                static_cast<float>(x_4),
-                               static_cast<float>(y_1),
-                               static_cast<float>(y_2),
-                               static_cast<float>(y_3),
-                               static_cast<float>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline double interpolate( uint16_t x1, uint16_t x2,
                             uint16_t x_1, uint16_t x_2, uint16_t x_3, uint16_t x_4,
                             double y_1, double y_2, double y_3, double y_4 )
 {
-  return static_cast< double >(
+#ifdef DEBUG
+  double retval = (
+#else
+  return 
+#endif
                   interpolate( static_cast<double>(x1),
                                static_cast<double>(x2),
                                static_cast<double>(x_1),
                                static_cast<double>(x_2),
                                static_cast<double>(x_3),
                                static_cast<double>(x_4),
-                               static_cast<double>(y_1),
-                               static_cast<double>(y_2),
-                               static_cast<double>(y_3),
-                               static_cast<double>(y_4) ));
+                               y_1,
+                               y_2,
+                               y_3,
+                               y_4 )
+#ifndef DEBUG
+                             ;
+#else
+  return retval;
+#endif
 }
 
 
+template<>
 inline int8_t interpolate( Fix16 x1, Fix16 x2,
                             Fix16 x_1, Fix16 x_2, Fix16 x_3, Fix16 x_4,
                             int8_t y_1, int8_t y_2, int8_t y_3, int8_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(
+#endif
+                  interpolate( x1,
+                               x2,
+                               x_1,
+                               x_2,
+                               x_3,
+                               x_4,
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<int8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline uint8_t interpolate( Fix16 x1, Fix16 x2,
                             Fix16 x_1, Fix16 x_2, Fix16 x_3, Fix16 x_4,
                             uint8_t y_1, uint8_t y_2, uint8_t y_3, uint8_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
-                               static_cast<Fix16>(y_1),
-                               static_cast<Fix16>(y_2),
-                               static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(
+#endif
+                  interpolate( x1,
+                               x2,
+                               x_1,
+                               x_2,
+                               x_3,
+                               x_4,
+                               static_cast<Fix16>(static_cast<int16_t>(y_1)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_2)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_3)),
+                               static_cast<Fix16>(static_cast<int16_t>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint8_t>(static_cast<int16_t>(retval));
+#endif
 }
 
 
+template<>
 inline int16_t interpolate( Fix16 x1, Fix16 x2,
                             Fix16 x_1, Fix16 x_2, Fix16 x_3, Fix16 x_4,
                             int16_t y_1, int16_t y_2, int16_t y_3, int16_t y_4 )
 {
-  return static_cast< int16_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<int16_t>(
+#endif
+                  interpolate( x1,
+                               x2,
+                               x_1,
+                               x_2,
+                               x_3,
+                               x_4,
                                static_cast<Fix16>(y_1),
                                static_cast<Fix16>(y_2),
                                static_cast<Fix16>(y_3),
-                               static_cast<Fix16>(y_4) ));
+                               static_cast<Fix16>(y_4) )
+#ifndef DEBUG
+                             );
+#else
+  return static_cast<int16_t>(retval);
+#endif
 }
 
 
+template<>
 inline uint16_t interpolate( Fix16 x1, Fix16 x2,
                             Fix16 x_1, Fix16 x_2, Fix16 x_3, Fix16 x_4,
                             uint16_t y_1, uint16_t y_2, uint16_t y_3, uint16_t y_4 )
 {
-  return static_cast< int32_t >(
-                  interpolate( static_cast<Fix16>(x1),
-                               static_cast<Fix16>(x2),
-                               static_cast<Fix16>(x_1),
-                               static_cast<Fix16>(x_2),
-                               static_cast<Fix16>(x_3),
-                               static_cast<Fix16>(x_4),
+#ifdef DEBUG
+  Fix16 retval = (
+#else
+  return static_cast<uint16_t>(static_cast<float>(
+#endif
+                  interpolate( x1,
+                               x2,
+                               x_1,
+                               x_2,
+                               x_3,
+                               x_4,
                                static_cast<Fix16>(static_cast<float>(y_1)),
                                static_cast<Fix16>(static_cast<float>(y_2)),
                                static_cast<Fix16>(static_cast<float>(y_3)),
-                               static_cast<Fix16>(static_cast<float>(y_4)) ));
+                               static_cast<Fix16>(static_cast<float>(y_4)) )
+#ifndef DEBUG
+                             ));
+#else
+  return static_cast<uint16_t>(static_cast<float>(retval));
+#endif
 }
 
 

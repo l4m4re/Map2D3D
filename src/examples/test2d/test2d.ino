@@ -29,7 +29,7 @@
 
 using namespace std;
 
-#define BAUDRATE    9600
+#define BAUDRATE    115200
 
 // Stuff needed for printing
 FILE                    serial_stdout;
@@ -103,8 +103,11 @@ void setup()
     Map2D<8, int16_t, int8_t>  testInt8;
     testInt8.setXs_P(xs);
     testInt8.setYs_P(ys8);
+    testInt8.printTo( Serial );
     testInt8.updateEeprom(0);
+    testInt8.printTo( Serial );
     testInt8.readEeprom(0);
+    testInt8.printTo( Serial );
 
     Map2D<8, int16_t, Fix16>  testFix16;
     testFix16.setXs_P(xs);
