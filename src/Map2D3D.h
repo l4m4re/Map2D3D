@@ -75,6 +75,7 @@
 #include <Print.h>
 #include "interpolate.h"
 #include "toString.h"
+#include "ExtendedSerial.h"
 
 #ifdef AVR
 #include <avr/eeprom.h>
@@ -104,19 +105,30 @@
 class Map
 {
   public:
-    virtual int     memSize() const                                 =0;
+    virtual int   memSize() const                               =0;
 
-#ifdef AVR
+    virtual bool  updateEeprom(uint8_t*      dest) const        =0;
+    virtual bool  readEeprom( const uint8_t* src)               =0;
 
-    virtual bool    updateEeprom(uint8_t* dest) const               =0;
-    virtual bool    readEeprom(const uint8_t* src)                  =0;
+    virtual void  printTo( Print& p, const uint8_t tabsize = 4,
+                           const char delim = ' '              )=0;
 
-#endif
+    virtual void  sendTo( ExtendedSerial& s)                    =0;
 
-    virtual void    printTo( Print& p, const uint8_t tabsize = 4,
-                             const char delim = ' ')                =0;
+    void          initReceive( uint16_t offset, size_t nr_bytes) 
+                  { bytesToReceive=nr_bytes; bytesReceived=0; curOffset=offset; }
 
-//  virtual void    printBinaryTo( Print& p)
+    bool		  receiveDone()
+                  { return bytesReceived >= bytesToReceive; }
+                
+    virtual bool  receiveFrom( ExtendedSerial& s)
+                  { return receiveDone();                   }
+
+    protected:
+
+    size_t		 bytesToReceive;
+    size_t		 bytesReceived;
+    uint16_t	 curOffset;
 };
 
 
@@ -134,33 +146,31 @@ public:
                       for( int i=0; i<S; i++ ) { xs[i] = 0; ys[i] = 0; }
                   }
 
-    int           xSize()   const  { return S; }
-    int           ySize()   const  { return S; }
-    int           memSize() const  { return S*(sizeof(X)+sizeof(Y));}
+    int           xSize()   const       { return S; }
+    int           ySize()   const       { return S; }
+    int           memSize() const       { return S*(sizeof(X)+sizeof(Y)); }
 
-    void          setXs( const X* xss ) 
-                        { memcpy( xs, xss, S*sizeof(X) ); }
+    void          setXs( const X* xss ) { memcpy( xs, xss, S*sizeof(X) ); }
 
     void          setXsFromFloat( const float* xss )
                   {
-                      for( int i=0; i<S; i++ )  { xs[i] = static_cast<X>(xss[i]); }
+                      for( int i=0; i<S; i++ ) { xs[i] = static_cast<X>(xss[i]); }
                   }                        
 
-    int           getXInt( int i )              { return 0<=i<S ? static_cast<int>(xs[i])   : 0; }
+    int           getXInt( int i )      { return 0<=i<S ? static_cast<int>(xs[i])   : 0; }
 
-    float         getXFloat( int i )            { return 0<=i<S ? static_cast<float>(xs[i]) : 0; }
+    float         getXFloat( int i )    { return 0<=i<S ? static_cast<float>(xs[i]) : 0; }
 
-    void          setYs( const Y* yss )
-                        { memcpy( ys, yss, S*sizeof(Y) ); }
+    void          setYs( const Y* yss ) { memcpy( ys, yss, S*sizeof(Y) ); }
 
     void          setYsFromFloat( const float* yss )
                   {
                       for( int i=0; i<S; i++ ) { ys[i] = static_cast<Y>(yss[i]); }
                   }
 
-    int           getYInt( int i )              { return 0<=i<S ? static_cast<int>(ys[i])   : 0; }
+    int           getYInt( int i )      { return 0<=i<S ? static_cast<int>(ys[i])   : 0; }
 
-    float         getYFloat( int i )            { return 0<=i<S ? static_cast<float>(ys[i]) : 0; }
+    float         getYFloat( int i )    { return 0<=i<S ? static_cast<float>(ys[i]) : 0; }
 
 #ifdef AVR
 
@@ -169,7 +179,7 @@ public:
                     if( !eeprom_is_ready() ) return false;
 
                     eeprom_update_block( xs, dest, sizeof(xs) );
-                    eeprom_update_block( ys, dest+sizeof(xs), sizeof(ys) );
+                    eeprom_update_block( ys, dest+ sizeof(xs), sizeof(ys) );
 
                     return true;
                   }
@@ -179,7 +189,7 @@ public:
                     if( !eeprom_is_ready() ) return false;
 
                     eeprom_read_block( xs, src, sizeof(xs) );
-                    eeprom_read_block( ys, src+sizeof(xs), sizeof(ys) );
+                    eeprom_read_block( ys, src+ sizeof(xs), sizeof(ys) );
 
                     return true;
                   }
@@ -187,8 +197,7 @@ public:
 
 #ifdef ARDUINO    // Initialization from array in PROGMEM
 
-    void          setXs_P( const X* xss ) 
-                        { memcpy_P( xs, xss, S*sizeof(X) ); }
+    void          setXs_P( const X* xss ) { memcpy_P( xs, xss, S*sizeof(X) ); }
 
     void          setXsFromFloat_P( const float* xss )
                   {
@@ -196,8 +205,7 @@ public:
                         xs[i] = static_cast<X>(pgm_read_float_near(xss+i)); }
                   }
 
-    void          setYs_P( const Y* yss )
-                        { memcpy_P( ys, yss, S*sizeof(Y) ); }
+    void          setYs_P( const Y* yss ) { memcpy_P( ys, yss, S*sizeof(Y) ); }
                        
     void          setYsFromFloat_P( const float* yss )
                   {
@@ -206,33 +214,65 @@ public:
                   }
 #endif
 
-    void          printTo( Print& p, const uint8_t tabsize = 4, const char delim = ' ')
+    virtual void  printTo( Print& p, const uint8_t tabsize = 4, const char delim = ' ' )
                   {
-                        const char spaceChar=' ';
-                        
+                    const char spaceChar=' ';
+                    
 //                      p.println( table title ); // TODO
 
-                        p.println();
+                    p.println();
 
-                        for (int x = 0; x < xSize(); x++)
-                        {
-                          const char* _x = toString(xs[x]);
+                    for (int x = 0; x < S; x++)
+                    {
+                      const char* _x = toString(xs[x]);
 
-                          for( uint16_t idx=0; idx<tabsize-strlen(_x); idx++)     p.write(spaceChar);
+                      for( uint16_t idx=0; idx<tabsize-strlen(_x); idx++)    p.write(spaceChar);
 
-                          p.print(_x);// Vertical Bins
-                          p.write(delim);
+                      p.print(_x);// Vertical Bins
+                      p.write(delim);
 
-                          const char* value = toString(ys[x]);
-                          for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
+                      const char* value = toString(ys[x]);
+                      for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
 
-                          p.print(value);
+                      p.print(value);
 
-                          p.println();
-                        }
+                      p.println();
+                    }
 
-                        p.println();
+                    p.println();
                   }
+
+    virtual void  sendTo( ExtendedSerial& s)
+                  {
+                    for (int i = 0; i < S; i++) { s.send( xs[i] ); }
+                    for (int i = 0; i < S; i++) { s.send( ys[i] ); }
+                  }
+
+    virtual bool  receiveFrom( ExtendedSerial& s) 
+				  {
+                    const size_t xend = S*sizeof(X);
+                    const size_t yend = xend + S*sizeof(Y);
+                      
+                    while( (curOffset < xend) && !receiveDone() )
+                    {
+                       int idx = curOffset / sizeof(X);
+                       size_t recvd = s.receive(xs[idx]);
+
+                       if( recvd) { curOffset += recvd; }
+                       else return false; // avoid infinite loop when we receive nothing.
+                    }
+
+                    while( (curOffset < yend) && !receiveDone() )
+                    {
+                       int idx = (curOffset - xend) / sizeof(Y);
+                       size_t recvd = s.receive(ys[idx]);
+
+                       if( recvd) { curOffset += recvd; }
+                       else return false; // avoid infinite loop when we receive nothing.
+                    }
+
+                    return receiveDone();   // bytesReceived >= bytesToReceive
+				  }
 
 
     Y             f( X x )              // approximate f(x)
@@ -266,28 +306,28 @@ protected:
 // 3D lookup table / fuel map. X axis must be sorted in ascending order.
 //-----------------------------------------------------------------------------
 
-template<int R, int S, typename X, typename Y> // R,S: size, X,Y: data type
+template<int R, int C, typename X, typename Y> // R,C: size, X,Y: data type
 class Map3D : public Map
 {
 public:
                   Map3D()
                   {
                       for( int i=0; i<R;   i++ ) { x1s[i] = 0; }
-                      for( int i=0; i<S;   i++ ) { x2s[i] = 0; }
-                      for( int i=0; i<R+S; i++ ) { ys[i]  = 0; }
+                      for( int i=0; i<C;   i++ ) { x2s[i] = 0; }
+                      for( int i=0; i<R*C; i++ ) { ys[i]  = 0; }
                   }                        
 
     int           x1Size()  const    { return R;   }
-    int           x2Size()  const    { return S;   }
-    int           ySize()   const    { return R*S; }
-    int           memSize() const    { return (R+S)*sizeof(X) + (R*S)*sizeof(Y);}
+    int           x2Size()  const    { return C;   }
+    int           ySize()   const    { return R*C; }
+    int           memSize() const    { return (R+C)*sizeof(X) + (R*C)*sizeof(Y);}
 
 
     void          setX1s( const X* x1ss ) 
                         { memcpy( x1s, x1ss, R*sizeof(X) ); }
 
     void          setX2s( const X* x2ss ) 
-                        { memcpy( x2s, x2ss, S*sizeof(X) ); }
+                        { memcpy( x2s, x2ss, C*sizeof(X) ); }
 
     void          setX1sFromFloat( const float* xss )
                   {
@@ -296,32 +336,29 @@ public:
 
     void          setX2sFromFloat( const float* xss )
                   {
-                      for( int i=0; i<S; i++ )  { x2s[i] = static_cast<X>(xss[i]); }
+                      for( int i=0; i<C; i++ )  { x2s[i] = static_cast<X>(xss[i]); }
                   }
 
-    int           getX1Int( int i )              { return 0<=i<R ? static_cast<int>(x1s[i])   : 0; }
-    int           getX2Int( int i )              { return 0<=i<S ? static_cast<int>(x2s[i])   : 0; }
+    int           getX1Int( int i )   { return 0<=i<R ? static_cast<int>(x1s[i])   : 0; }
+    int           getX2Int( int i )   { return 0<=i<C ? static_cast<int>(x2s[i])   : 0; }
 
-    float         getX1Float( int i )            { return 0<=i<R ? static_cast<float>(x1s[i]) : 0; }
-    float         getX2Float( int i )            { return 0<=i<S ? static_cast<float>(x2s[i]) : 0; }
+    float         getX1Float( int i ) { return 0<=i<R ? static_cast<float>(x1s[i]) : 0; }
+    float         getX2Float( int i ) { return 0<=i<C ? static_cast<float>(x2s[i]) : 0; }
 
     void          setYs( const Y* yss )
-                        { memcpy( ys, yss, R*S*sizeof(Y) ); }
-
+                        { memcpy( ys, yss, R*C*sizeof(Y) ); }
 
     void          setYsFromFloat( const float* yss ) 
                   {
-                      for( int i=0; i<R*S; i++ ) 
+                      for( int i=0; i<R*C; i++ ) 
                         { ys[i] = static_cast<Y>(yss[i]); }
                   }
 
     int           getYInt( int i, int j )
-                      { return 0<=i<R && 0<=j<S ? static_cast<int>(ys[i][j]) : 0; }
+                      { return 0<=i<R && 0<=j<C ? static_cast<int>(ys[i][j]) : 0; }
 
     float         getYFloat( int i, int j )
-                      { return 0<=i<R && 0<=j<S ? static_cast<float>(ys[i][j]) : 0; }
-
-#ifdef AVR
+                      { return 0<=i<R && 0<=j<C ? static_cast<float>(ys[i][j]) : 0; }
 
     virtual bool  updateEeprom(uint8_t* dest) const
                   {
@@ -344,15 +381,11 @@ public:
 
                     return true;
                   }
-#endif
 
 #ifdef ARDUINO    // Initialize from array in PROGMEM
 
-    void          setX1s_P( const X* x1ss ) 
-                        { memcpy_P( x1s, x1ss, R*sizeof(X) ); }
-
-    void          setX2s_P( const X* x2ss ) 
-                        { memcpy_P( x2s, x2ss, S*sizeof(X) ); }
+    void          setX1s_P( const X* x1ss ) { memcpy_P( x1s, x1ss, R*sizeof(X) ); }
+    void          setX2s_P( const X* x2ss ) { memcpy_P( x2s, x2ss, C*sizeof(X) ); }
 
     void          setX1sFromFloat_P( const float* xss )
                   {
@@ -362,61 +395,116 @@ public:
 
     void          setX2sFromFloat_P( const float* xss )
                   {
-                      for( int i=0; i<S; i++ )
+                      for( int i=0; i<C; i++ )
                         { x2s[i] = static_cast<X>(pgm_read_float_near(xss+i)); }
                   }
 
-    void          setYs_P( const Y* yss )
-                        { memcpy_P( ys, yss, R*S*sizeof(Y) ); }
+    void          setYs_P( const Y* yss ) { memcpy_P( ys, yss, R*C*sizeof(Y) ); }
 
     void          setYsFromFloat_P( const float* yss )
                   {
-                      for( int i=0; i<R*S; i++ ) 
+                      for( int i=0; i<R*C; i++ ) 
                           { ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
                   }
 
 
 #endif
 
-    void          printTo( Print& p, const uint8_t tabsize = 4, const char delim = ' ')
+    virtual void  printTo( Print& p, const uint8_t tabsize = 4, const char delim = ' ' )
                   {
-                        const char spaceChar=' ';
-                        
-//                      p.println( table title ); // TODO
+                    const char spaceChar=' ';
+                    
+//                  p.println( table title ); // TODO
 
-                        p.println();
-                        for (int y = 0; y < x2Size(); y++)
-                        {
-                          const char* _x2 = toString(x2s[y]);
+                    p.println();
+                    for( int x = 0; x < R; x++ )
+                    {
+                      const char* _x1 = toString(x1s[x]);
 
-                          for( uint16_t idx=0; idx<tabsize-strlen(_x2); idx++)  p.write(spaceChar);
+                      for( int idx=0; idx<tabsize-strlen(_x1); idx++)    p.write(spaceChar);
 
-                          p.print(_x2);// Vertical Bins
-                          p.write(delim);
+                      p.print(_x1);             // Vertical
+                      p.write(delim);
 
-                          for (int i = 0; i < x1Size(); i++)
-                          {
-                            const char* value = toString(ys[y][i]);
-                            for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
+                      for (int y = 0; y < C; y++)
+                      {
+                        const char* value = toString(ys[x][y]);
+                        for( int idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
 
-                            p.print(value);
-                            p.write(delim);
-                          }
-                          p.println();
-                        }
+                        p.print(value);
+                        p.write(delim);
+                      }
+                      p.println();
+                    }
 
-                        for( uint16_t idx=0; idx<tabsize; idx++)                p.write(spaceChar);
+                    for( int idx=0; idx<tabsize; idx++)                p.write(spaceChar);
 
-                        for (int x = 0; x < x1Size(); x++)// Horizontal bins
-                        {
-                          const char* _x1 = toString(x1s[x]); //  / 100; for TS
-                          for( uint16_t idx=0; idx<tabsize-strlen(_x1); idx++)  p.write(spaceChar);
+                    for (int x = 0; x < C; x++) // Horizontal 
+                    {
+                      const char* _x2 = toString(x2s[x]);
+                      for( uint16_t idx=0; idx<tabsize-strlen(_x2); idx++)  p.write(spaceChar);
 
-                          p.print(_x1);
-                          p.write(delim);
-                        }
-                        p.println();
+                      p.print(_x2);
+                      p.write(delim);
+                    }
+                    p.println();
                   }
+
+    virtual void  sendTo( ExtendedSerial& s)
+                  {
+                    for (int i = 0; i < R; i++) { s.send( x1s[i] ); }
+                    for (int i = 0; i < C; i++) { s.send( x2s[i] ); }
+
+                    //for (int x = 0; x < R; x++)
+                    for (int x = R-1; x >=0; x--)  // TS likes rows in reverse order
+                    {
+                      for (int y = 0; y < C; x++)
+                        { s.send( ys[x][y] ); }
+                    }
+                  }
+
+    virtual bool  receiveFrom( ExtendedSerial& s) 
+				  {
+                    const size_t x1end = R*sizeof(X);
+                    const size_t x2end = x1end + C*sizeof(X);
+                    const size_t yend  = x2end + R*C*sizeof(Y);
+                      
+                    while( (curOffset < x1end) && !receiveDone() )
+                    {
+                       int idx = curOffset / sizeof(X);
+
+                       size_t recvd = s.receive(x1s[idx]);
+
+                       if( recvd) { curOffset += recvd; }
+                       else return false; // avoid infinite loop when we receive nothing.
+                    }
+
+                    while( (curOffset < x2end) && !receiveDone() )
+                    {
+                       int idx = (curOffset - x1end) / sizeof(X);
+
+                       size_t recvd = s.receive(x2s[idx]);
+
+                       if( recvd) { curOffset += recvd; }
+                       else return false; // avoid infinite loop when we receive nothing.
+                    }
+
+                    while( (curOffset < yend) && !receiveDone() )
+                    {
+                       int idx = (curOffset - x2end) / sizeof(Y);
+
+                       //int idx1 = idx/C; 
+                       int idx1 = R - 1 - idx/C;  // TS likes the rows in reverse order
+                       int idx2 = idx%C;
+
+                       size_t recvd = s.receive(ys[idx1][idx2]);
+
+                       if( recvd) { curOffset += recvd; }
+                       else return false; // avoid infinite loop when we receive nothing.
+                    }
+
+                    return receiveDone();   // bytesReceived >= bytesToReceive
+				  }
 
 
     Y             f( X x1, X x2 )
@@ -424,7 +512,7 @@ public:
                     if (x1 < x1s[0])      { x1 = x1s[0];   } // minimum
                     if (x1 > x1s[R-1])    { x1 = x1s[R-1]; } // maximum
                     if (x2 < x2s[0])      { x2 = x2s[0];   } // minimum
-                    if (x2 > x2s[S-1])    { x2 = x2s[S-1]; } // maximum
+                    if (x2 > x2s[C-1])    { x2 = x2s[C-1]; } // maximum
 
                     int i=0, j=R-1, m;
 
@@ -436,7 +524,7 @@ public:
                         else                j = m;
                     }
 
-                    int k=S-1; 
+                    int k=C-1; 
                     j=0;
                     
                     // find j, such that x2s[j] <= x2 < x2s[k] using bisection
@@ -454,9 +542,9 @@ public:
 
 protected:
 
-    X             x1s[S];
-    X             x2s[S];
-    Y             ys[R][S];
+    X             x1s[R];
+    X             x2s[C];
+    Y             ys[R][C];
 
 };
 
