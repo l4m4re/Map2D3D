@@ -22,6 +22,7 @@
 
 #include "Arduino.h"
 #include "Map2D3D.h"
+#include "toString.h"
 
 //#include <fix16.h>
 #include <fix16.hpp>
@@ -32,9 +33,7 @@ using namespace std;
 #define BAUDRATE    115200
 
 // Stuff needed for printing
-FILE                    serial_stdout;
-static char             outstr[15];
-#define mPrintFloat(f)  dtostrf(f, 9, 2, outstr); Serial.print(outstr);
+#define mPrintFloat(f)  Serial.print(toString(f,9,2));
 
 
 const int8_t xs_int8_t_8[]    PROGMEM = 
@@ -165,10 +164,6 @@ void initSerial()
 {
     // Open serial port with a baud rate of BAUDRATE b/s
     Serial.begin(BAUDRATE);
-    
-    // Set up stdout
-    fdev_setup_stream(&serial_stdout, serial_putchar, NULL, _FDEV_SETUP_WRITE);
-    stdout = &serial_stdout;
 }
 
 //-----------------------------------------------------------------------------
