@@ -20,11 +20,14 @@
 
 #include "Arduino.h"
 #include "Map2D3D.h"
+#include "ExtendedSerial.h"
 
 //#include <fix16.h>
 #include <fix16.hpp>
 
 #define BAUDRATE    115200
+
+ExtendedSerial serial(Serial);
 
 /* http://www.gammon.com.au/progmem 
  *  
@@ -51,7 +54,7 @@ const int8_t   ys[] PROGMEM = {-127,     -50,  127,    0,    10,   -30,   -50,  
 const byte    ysb[] PROGMEM = {   0,      30,   55,   89,    99,   145,   255,   10 };
 
 
-#define USEPROGMEM
+//#define USEPROGMEM
 // In order to use program memory for Fix16's directly, we need to cast to/from int32_t 
 
 #ifdef USEPROGMEM    
@@ -94,7 +97,7 @@ const float tuningMap[256] PROGMEM =
 void initSerial()
 {
     // Open serial port with a baud rate of BAUDRATE b/s
-    Serial.begin(BAUDRATE);
+    serial.begin(BAUDRATE);
 }
 
 
@@ -102,18 +105,9 @@ void setup()
 {
     initSerial();
 
-    Serial.println();
-    Serial.println( F("Hi there") );
+    serial.println();
+    serial.println( F("Hi there") );
 
-    dprint( INT8_MIN );
-    dprint( INT8_MAX );
-    dprint( INT16_MIN );
-    dprint( INT16_MAX );
-    dprint( INT32_MIN );
-    dprint( INT32_MAX );
-
-    
-/*
     Map2D<8, int16_t, int8_t>  test;
     test.setXs_P(xs);
     test.setYs_P(ys);
@@ -121,9 +115,9 @@ void setup()
     for( int idx=250; idx<2550; idx+=50)
     {
       int8_t val = test.f(idx);
-      Serial.print(idx);
-      Serial.print( F(": ") );
-      Serial.println( (int)val );
+      serial.print(idx);
+      serial.print( F(": ") );
+      serial.println( (int)val );
     }
 
 
@@ -134,9 +128,9 @@ void setup()
     for( int idx=250; idx<2550; idx+=50)
     {
       byte val = testb.f(idx);
-      Serial.print(idx);
-      Serial.print( F(": ") );
-      Serial.println( (int)val );
+      serial.print(idx);
+      serial.print( F(": ") );
+      serial.println( (int)val );
     }
 
 
@@ -154,14 +148,14 @@ void setup()
 
     for( int idx=0; idx<8; idx++)
     {
-      Serial.print(idx);
-      Serial.print( F(": ") );
-      Serial.print( (float)ysf[idx] );
-      Serial.print( F(": ") );
+      serial.print(idx);
+      serial.print( F(": ") );
+      serial.print( ysf[idx] );
+      serial.print( F(": ") );
 #ifdef USEPROGMEM       
-      Serial.println();
+      serial.println();
 #else
-      Serial.println( ysf[idx].value, HEX );
+      serial.println( ysf[idx].value, HEX );
 #endif
     }
 
@@ -169,9 +163,9 @@ void setup()
     for( int idx=250; idx<2550; idx+=50)
     {
       Fix16 val = testFix16.f(idx);
-      Serial.print(idx);
-      Serial.print( F(": ") );
-      Serial.println( (float)val );
+      serial.print(idx);
+      serial.print( F(": ") );
+      serial.println( val );
     }
 
 
@@ -190,13 +184,12 @@ void setup()
     {
       Fix16 val = testFix16FromFloat.f(idx);
       Fix16 val2 = testFix16.f(idx);
-      Serial.print(idx);
-      Serial.print( F(": ") );
-      Serial.print( (float)val );
-      Serial.print( F(", ") );
-      Serial.println( (float)val2 );
+      serial.print(idx);
+      serial.print( F(": ") );
+      serial.print( val );
+      serial.print( F(", ") );
+      serial.println( val2 );
     }
-*/
  
 }
 
