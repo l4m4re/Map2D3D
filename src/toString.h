@@ -42,13 +42,13 @@
 #define OCT 8
 #define BIN 2
 
-const char* toString(char, int = DEC);
-const char* toString(unsigned char, int = DEC);
-const char* toString(int, int = DEC);
-const char* toString(unsigned int, int = DEC);
-const char* toString(long, int = DEC);
-const char* toString(unsigned long, int = DEC);
-const char* toString(double, int digits = 2);  // Max 8 digits.
-const char* toString(Fix16,  int digits = 2);  // Max 8 digits.
+const char* toString(char,          int tabsize=4, int = DEC);
+const char* toString(unsigned char, int tabsize=4, int = DEC);
+const char* toString(int,           int tabsize=4, int = DEC);
+const char* toString(unsigned int,  int tabsize=4, int = DEC);
+const char* toString(long,          int tabsize=4, int = DEC);
+const char* toString(unsigned long, int tabsize=4, int = DEC);
+const char* toString(double, int tabsize=4, int digits = 2);  // Max 8 digits.
+const char* toString(Fix16,  int tabsize=4, int digits = 2);  // Max 8 digits.
 
 #endif
