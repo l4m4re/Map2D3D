@@ -79,6 +79,8 @@
 
 #ifdef AVR
 #include <avr/eeprom.h>
+#else
+#include <EEPROM.h>
 #endif
 
 
@@ -107,8 +109,10 @@ class Map
   public:
     virtual int   memSize() const                               =0;
 
+#ifdef AVR
     virtual bool  updateEeprom(uint8_t*      dest) const        =0;
     virtual bool  readEeprom( const uint8_t* src)               =0;
+#endif
 
     virtual void  printTo( Print& p, const uint8_t tabsize = 4,
                            const char delim = ' '              )=0;
@@ -173,7 +177,6 @@ public:
     float         getYFloat( int i )    { return 0<=i<S ? static_cast<float>(ys[i]) : 0; }
 
 #ifdef AVR
-
     virtual bool  updateEeprom(uint8_t* dest) const
                   {
                     if( !eeprom_is_ready() ) return false;
@@ -360,6 +363,7 @@ public:
     float         getYFloat( int i, int j )
                       { return 0<=i<R && 0<=j<C ? static_cast<float>(ys[i][j]) : 0; }
 
+#ifdef AVR
     virtual bool  updateEeprom(uint8_t* dest) const
                   {
                     if( !eeprom_is_ready() ) return false;
@@ -381,7 +385,7 @@ public:
 
                     return true;
                   }
-
+#endif
 #ifdef ARDUINO    // Initialize from array in PROGMEM
 
     void          setX1s_P( const X* x1ss ) { memcpy_P( x1s, x1ss, R*sizeof(X) ); }

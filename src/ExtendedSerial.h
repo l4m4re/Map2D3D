@@ -82,8 +82,12 @@ class ExtendedSerial : public Stream
                     ExtendedSerial(HardwareSerial& s) : _s(s) {}
 
     // Methods delegated to existing Serial instance
+#ifdef AVR
     void            begin(unsigned long baud)         { begin(baud, SERIAL_8N1);  }
     void            begin(unsigned long b, uint8_t m) { _s.begin(b,m);            }
+#else
+    void            begin(unsigned long baud)         { _s.begin(baud);           }
+#endif
     void            end()                             { _s.end();                 }
     virtual int     available(void)                   { return _s.available();    }
     virtual int     peek(void)                        { return _s.peek();         }
@@ -95,7 +99,9 @@ class ExtendedSerial : public Stream
     inline  size_t  write(long n)                     { return write((uint8_t)n); }
     inline  size_t  write(unsigned int n)             { return write((uint8_t)n); }
     inline  size_t  write(int n)                      { return write((uint8_t)n); }
+#ifdef AVR
     virtual int     availableForWrite(void)           { return _s.availableForWrite(); }
+#endif
     operator bool()                                   { return true;                   }
 
     // Extra methods
@@ -142,16 +148,15 @@ class ExtendedSerial : public Stream
     using           Print::print;   // pull in existing print methods from Print.
     using           Print::println; // pull in existing println methods from Print.
 
-  protected:
-                    // Must be instantiated with a HardwareSerial&.
-                    ExtendedSerial()                {}
-                    ExtendedSerial(ExtendedSerial&) {}
-                    ExtendedSerial(int)             {}
-                    ExtendedSerial(const char*)     {}
-
   private:
 
     HardwareSerial& _s;
+
+                    // Must be instantiated with a HardwareSerial&.
+                    ExtendedSerial();
+                    ExtendedSerial(ExtendedSerial&);
+                    ExtendedSerial(int);
+                    ExtendedSerial(const char*);
 };
 
 
