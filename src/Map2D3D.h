@@ -28,7 +28,7 @@
 // known values for y = f(x), as follows::
 //
 //   ys[i] = f( xs[i] )
-//     
+//
 // For the two dimensional case, three arrays are used to store a number of
 // known values for y = f(X) = f(x1,x2), as follows::
 //
@@ -36,10 +36,10 @@
 //
 // In order to approximate f(X) at any point within the range of stored
 // values, we search the xs array(s) to find the nearest known X-es and
-// lineary interpolate the known result stored in the ys array.    
+// lineary interpolate the known result stored in the ys array.
 //
 //-----------------------------------------------------------------------------
-// 
+//
 // Based on:
 //
 // Set array size at compile time thru constructor
@@ -65,7 +65,7 @@
 //-----------------------------------------------------------------------------
 
 // Requires Fix16 library: https://github.com/l4m4re/Arduino_fixpt
-#define SUPPORT_INTEGER_ARITMETHIC 1  
+#define SUPPORT_INTEGER_ARITMETHIC 1
 
 //-----------------------------------------------------------------------------
 // Includes
@@ -92,7 +92,7 @@
                                p.print( F(": ") ); p.println( expression )
     #define dshow(expression) p.println( expression )
 #else
-    #define dprint(expression) 
+    #define dprint(expression)
     #define dshow(expression)
 #endif
 
@@ -138,13 +138,13 @@ public:
     int           ySize()   const  { return S; }
     int           memSize() const  { return S*(sizeof(X)+sizeof(Y));}
 
-    void          setXs( const X* xss ) 
+    void          setXs( const X* xss )
                         { memcpy( xs, xss, S*sizeof(X) ); }
 
     void          setXsFromFloat( const float* xss )
                   {
                       for( int i=0; i<S; i++ )  { xs[i] = static_cast<X>(xss[i]); }
-                  }                        
+                  }
 
     int           getXInt( int i )              { return 0<=i<S ? static_cast<int>(xs[i])   : 0; }
 
@@ -187,70 +187,70 @@ public:
 
 #ifdef ARDUINO    // Initialization from array in PROGMEM
 
-    void          setXs_P( const X* xss ) 
+    void          setXs_P( const X* xss )
                         { memcpy_P( xs, xss, S*sizeof(X) ); }
 
     void          setXsFromFloat_P( const float* xss )
                   {
-                      for( int i=0; i<S; i++ ) { 
+                      for( int i=0; i<S; i++ ) {
                         xs[i] = static_cast<X>(pgm_read_float_near(xss+i)); }
                   }
 
     void          setYs_P( const Y* yss )
                         { memcpy_P( ys, yss, S*sizeof(Y) ); }
-                       
+
     void          setYsFromFloat_P( const float* yss )
                   {
-                      for( int i=0; i<S; i++ ) 
+                      for( int i=0; i<S; i++ )
                           { ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
                   }
 #endif
 
     void          printTo( Print& p, const uint8_t tabsize = 4, const char delim = ' ')
                   {
-                        const char spaceChar=' ';
-                        
+                    const char spaceChar=' ';
+
 //                      p.println( table title ); // TODO
 
-                        p.println();
+                    p.println();
 
-                        for (int x = 0; x < xSize(); x++)
-                        {
-                          const char* _x = toString(xs[x]);
+                    for (int x = 0; x < xSize(); x++)
+                    {
+                      const char* _x = toString(xs[x]);
 
-                          for( uint16_t idx=0; idx<tabsize-strlen(_x); idx++)     p.write(spaceChar);
+                      for( uint16_t idx=0; idx<tabsize-strlen(_x); idx++)     p.write(spaceChar);
 
-                          p.print(_x);// Vertical Bins
-                          p.write(delim);
+                      p.print(_x);// Vertical Bins
+                      p.write(delim);
 
-                          const char* value = toString(ys[x]);
-                          for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
+                      const char* value = toString(ys[x]);
+                      for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
 
-                          p.print(value);
+                      p.print(value);
 
-                          p.println();
-                        }
+                      p.println();
+                    }
 
-                        p.println();
+                    p.println();
                   }
 
 
     Y             f( X x )              // approximate f(x)
-                  {    
+                  {
                     if (x < xs[0])      { return ys[0];   } // minimum
                     if (x > xs[S-1])    { return ys[S-1]; } // maximum
 
                     int i=0, j=S-1, k;
 
                     // find i, such that xs[i] <= x < xs[j] using bisection
-                    while ( j - i > 1) {                      
+                    while ( j - i > 1) {
                         k = (i+j) >> 1;  // k = (i+j)/2
-                        
+
                         if ( x >= xs[k] )   i = k;
                         else                j = k;
                     }
 
-                    return interpolate( x, xs[i], xs[i+1], ys[i], ys[i+1]); 
+                    return interpolate( x, xs[i], xs[i+1], ys[i], ys[i+1]);
 
                   }
 
@@ -275,7 +275,7 @@ public:
                       for( int i=0; i<R;   i++ ) { x1s[i] = 0; }
                       for( int i=0; i<S;   i++ ) { x2s[i] = 0; }
                       for( int i=0; i<R+S; i++ ) { ys[i]  = 0; }
-                  }                        
+                  }
 
     int           x1Size()  const    { return R;   }
     int           x2Size()  const    { return S;   }
@@ -283,10 +283,10 @@ public:
     int           memSize() const    { return (R+S)*sizeof(X) + (R*S)*sizeof(Y);}
 
 
-    void          setX1s( const X* x1ss ) 
+    void          setX1s( const X* x1ss )
                         { memcpy( x1s, x1ss, R*sizeof(X) ); }
 
-    void          setX2s( const X* x2ss ) 
+    void          setX2s( const X* x2ss )
                         { memcpy( x2s, x2ss, S*sizeof(X) ); }
 
     void          setX1sFromFloat( const float* xss )
@@ -309,9 +309,9 @@ public:
                         { memcpy( ys, yss, R*S*sizeof(Y) ); }
 
 
-    void          setYsFromFloat( const float* yss ) 
+    void          setYsFromFloat( const float* yss )
                   {
-                      for( int i=0; i<R*S; i++ ) 
+                      for( int i=0; i<R*S; i++ )
                         { ys[i] = static_cast<Y>(yss[i]); }
                   }
 
@@ -348,10 +348,10 @@ public:
 
 #ifdef ARDUINO    // Initialize from array in PROGMEM
 
-    void          setX1s_P( const X* x1ss ) 
+    void          setX1s_P( const X* x1ss )
                         { memcpy_P( x1s, x1ss, R*sizeof(X) ); }
 
-    void          setX2s_P( const X* x2ss ) 
+    void          setX2s_P( const X* x2ss )
                         { memcpy_P( x2s, x2ss, S*sizeof(X) ); }
 
     void          setX1sFromFloat_P( const float* xss )
@@ -371,7 +371,7 @@ public:
 
     void          setYsFromFloat_P( const float* yss )
                   {
-                      for( int i=0; i<R*S; i++ ) 
+                      for( int i=0; i<R*S; i++ )
                           { ys[i] = static_cast<Y>( pgm_read_float_near(yss+i) ); }
                   }
 
@@ -380,47 +380,47 @@ public:
 
     void          printTo( Print& p, const uint8_t tabsize = 4, const char delim = ' ')
                   {
-                        const char spaceChar=' ';
-                        
-//                      p.println( table title ); // TODO
+                    const char spaceChar=' ';
 
-                        p.println();
-                        for (int y = 0; y < x2Size(); y++)
-                        {
-                          const char* _x2 = toString(x2s[y]);
+//                  p.println( table title ); // TODO
 
-                          for( uint16_t idx=0; idx<tabsize-strlen(_x2); idx++)  p.write(spaceChar);
+                    p.println();
+                    for (int y = 0; y < x2Size(); y++)
+                    {
+                      const char* _x2 = toString(x2s[y]);
 
-                          p.print(_x2);// Vertical Bins
-                          p.write(delim);
+                      for( uint16_t idx=0; idx<tabsize-strlen(_x2); idx++)  p.write(spaceChar);
 
-                          for (int i = 0; i < x1Size(); i++)
-                          {
-                            const char* value = toString(ys[y][i]);
-                            for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
+                      p.print(_x2);// Vertical Bins
+                      p.write(delim);
 
-                            p.print(value);
-                            p.write(delim);
-                          }
-                          p.println();
-                        }
+                      for (int i = 0; i < x1Size(); i++)
+                      {
+                        const char* value = toString(ys[y][i]);
+                        for( uint16_t idx=0; idx<tabsize-strlen(value); idx++) p.write(spaceChar);
 
-                        for( uint16_t idx=0; idx<tabsize; idx++)                p.write(spaceChar);
+                        p.print(value);
+                        p.write(delim);
+                      }
+                      p.println();
+                    }
 
-                        for (int x = 0; x < x1Size(); x++)// Horizontal bins
-                        {
-                          const char* _x1 = toString(x1s[x]); //  / 100; for TS
-                          for( uint16_t idx=0; idx<tabsize-strlen(_x1); idx++)  p.write(spaceChar);
+                    for( uint16_t idx=0; idx<tabsize; idx++)                p.write(spaceChar);
 
-                          p.print(_x1);
-                          p.write(delim);
-                        }
-                        p.println();
+                    for (int x = 0; x < x1Size(); x++)// Horizontal bins
+                    {
+                      const char* _x1 = toString(x1s[x]); //  / 100; for TS
+                      for( uint16_t idx=0; idx<tabsize-strlen(_x1); idx++)  p.write(spaceChar);
+
+                      p.print(_x1);
+                      p.write(delim);
+                    }
+                    p.println();
                   }
 
 
     Y             f( X x1, X x2 )
-                  {    
+                  {
                     if (x1 < x1s[0])      { x1 = x1s[0];   } // minimum
                     if (x1 > x1s[R-1])    { x1 = x1s[R-1]; } // maximum
                     if (x2 < x2s[0])      { x2 = x2s[0];   } // minimum
@@ -429,27 +429,27 @@ public:
                     int i=0, j=R-1, m;
 
                     // find i, such that x1s[i] <= x1 < x1s[j] using bisection
-                    while ( j - i > 1) {                      
+                    while ( j - i > 1) {
                         m = (i+j) >> 1;     // m = (i+j)/2
-                        
+
                         if ( x1 >= x1s[m] ) i = m;
                         else                j = m;
                     }
 
-                    int k=S-1; 
+                    int k=S-1;
                     j=0;
-                    
+
                     // find j, such that x2s[j] <= x2 < x2s[k] using bisection
-                    while ( k - j > 1) {                      
+                    while ( k - j > 1) {
                         m = (j+k) >> 1;     // m = (j+k)/2
-                        
+
                         if ( x2 >= x2s[m] ) j = m;
                         else                k = m;
                     }
 
-                    return interpolate( x1,       x2, 
+                    return interpolate( x1,       x2,
                                         x1s[i],   x1s[i+1],   x2s[j],       x2s[j+1],
-                                        ys[i][j], ys[i+1][j], ys[i+1][j+1], ys[i][j+1]);   
+                                        ys[i][j], ys[i+1][j], ys[i+1][j+1], ys[i][j+1]);
                   }
 
 protected:
@@ -462,7 +462,7 @@ protected:
 
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 
 #endif // End multi-include protection

@@ -1,1 +1,4 @@
-Program('test2d_beagle.cc', parse_flags = '-g -I../..', LIBS=['fixmath'])
+Program( 'test2d_beagle', ['test2d_beagle.cc', '../../toString.cpp'],
+         parse_flags = '-g -I../..  -I/usr/local/include/Wiring',
+         LIBS=['fixmath','wiring']
+      )
